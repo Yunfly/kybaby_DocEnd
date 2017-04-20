@@ -1,0 +1,138 @@
+/**
+ * Created by Administrator on 2017/3/11.
+ */
+
+exports.install = function (Vue, options) {
+  Vue.prototype.return_before = function (){
+    window.history.back();
+  };
+  Vue.prototype.threeUnaryEvent=function(con){
+    return con==null ? "" :con;
+  };
+
+  Vue.prototype.autoLogin = function (){
+    var that = this;
+    this.$ajax.post(host+'login.action', 'action=autoLogin'
+    )
+      .then(function (result) {
+        if(result.data.mes=="未登录"||result.data.mes=="请登录"){
+          that.$router.push('/login');
+          return false;
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
+  Vue.prototype.getwebsocketDoctorId = function (){
+    var that = this;
+    var websocketDoctorId = null;
+    this.$ajax.post(host+'personZone.action', 'action=recommend'
+    )
+      .then(function (result) {
+        if(result.data.mes=='成功'){
+          websocketDoctorId=result.data.doctorInfo.id;
+          //websocketDoctorName=result.doctorInfo.doctorName;
+          that.doctorInfo = result.data.doctorInfo;
+          sessionStorage.setItem('websocketDoctorId',result.data.doctorInfo.id);
+          //sessionStorage.setItem('websocketDoctorName',result.doctorInfo.doctorName);
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+/*页面跳转*/
+  Vue.prototype.link_to = function (url){
+    window.location.href = url;
+  };
+
+  Vue.prototype.getSubmittedToken=function () {//获取重复提交令牌
+
+    if(submitted.token != null && submitted.token != 'null'&& submitted.token != 'undefined'){//如果令牌不为null
+      return;
+    }
+    this.$ajax.post(urlWay.host+'kybaby/token/token.action')
+      .then(function(result){
+        sessionStorage.setItem('submittedToken_kybaby',result.data.token);
+        submitted.token=result.data.token;
+      })
+      .catch(function(XMLHttpRequest, textStatus, errorThrown) {
+        submitted.token=null;
+      });
+  };
+
+// 重复提交
+  global.submitted={
+    token:sessionStorage.getItem('submittedToken_kybaby'),//令牌
+    time:0,//次数
+    setTime: function () {//给重复提交次数赋值为0
+      submitted.time=0;
+    },
+    setToken: function (token) {//提交成功后重新赋值token
+      sessionStorage.setItem('submittedToken_kybaby',token);
+      submitted.token=token;
+    },
+    jsControl: function () {//js控制连续点击
+      if(submitted.time>0){
+        return true;
+      }
+      submitted.time++;
+      return false;
+    },
+    submitSuccess: function (mes,token) {//提交成功（可能是重复提交）
+      submitted.setTime();
+      if(mes=="repeatCommited"){
+        alert("请不要重复提交哦！");
+        return true;
+      }
+      submitted.setToken(token);
+      return false;
+    },
+    submitError: function () {//提交失败重新获取token
+      submitted.setTime();
+      sessionStorage.removeItem('submittedToken_kybaby');
+      submitted.token=null;
+      submitted.getSubmittedToken();
+    }
+  };
+
+  //WebSocket
+  global.websocket = null;
+  global.websocketDoctorId=null;
+  global.websocketDoctorName='';
+//判断当前浏览器是否支持WebSocket
+  if('WebSocket' in window){
+    websocket = new WebSocket("ws://"+ urlWay.hostName.substring(7)+"/kybaby/websocket");
+  }
+  else{
+    alert('Not support websocket')
+  }
+
+  websocket.onerror = WSonError;
+
+  websocket.onopen = WSonOpen;
+
+  websocket.onclose = WSonClose;
+
+  window.onbeforeunload = WSonBeforeUnload;
+
+  function WSonOpen(){
+    //alert("ws://"+ urlWay.hostName.substring(7)+"/kybaby/websocket");
+    //setMessageInnerHTML("成功进入聊天室");
+  }
+  function WSonError(){
+
+    //setMessageInnerHTML("发生错误");
+  }
+
+  function WSonClose(){
+
+    //setMessageInnerHTML("退出聊天室");
+  }
+  function WSonBeforeUnload(){
+    websocket.close();
+  }
+};
+

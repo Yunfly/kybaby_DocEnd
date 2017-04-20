@@ -1,0 +1,40 @@
+body{
+    background: url('../../img/server/service_bg.png')no-repeat;
+    background-size: cover;
+}
+#header{
+    transition: .5s;
+}
+#header.transparent{
+    background: rgba(255,255,255,0);
+}
+section{
+    margin-top: 64px;
+    background: rgba(255,255,255,.96);
+    text-align: center;
+    box-shadow: 0px 0px 6px 0px rgba(225,225,225,0.3);
+    border-radius: 3px;
+}
+section>ul{
+    border-bottom: 1px solid #eee;
+}
+section>ul:last-child{
+    border-bottom: 0px;
+}
+section>ul>li{
+    padding: 20px 0;
+}
+section>ul>li:nth-child(1){
+    border-right: 1px solid #eee;
+}
+section>ul>li>div{
+    height: 50px;
+}
+section img{
+    margin: 0 auto;
+    width: 46px;
+}
+section p{
+    margin-top: 10px;
+    font-size: 14px;
+}

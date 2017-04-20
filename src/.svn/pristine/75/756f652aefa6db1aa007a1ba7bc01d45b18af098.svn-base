@@ -1,0 +1,41 @@
+body{
+    background: #f8f8f8;
+}
+#container {
+    margin: 45px 0 50px 0;
+    background-color: #fff;
+}
+
+.header_Right{
+    width: 20%;
+    float: right;
+    color: #c8c8c8;
+}
+.header_Right p {
+    background: url(../../img/right.png) no-repeat;
+    background-size: 100% 100%;
+    width: 9px;
+    height: 13px;
+    position: relative;
+    top: 17px;
+}
+.account_list{
+    height: 47px;
+    border-bottom: 1px solid #eee;
+    margin: 0px 20px;
+    line-height: 48px;
+}
+.account_list:last-child{
+    border:none;
+}
+.account_list span{
+    padding:0 10px;
+}
+.account_list .float-right{
+    width:40%;
+}
+.account_list img{
+    width:18px;
+    height:auto;
+}
+.gray_3{ margin-top:10px;}

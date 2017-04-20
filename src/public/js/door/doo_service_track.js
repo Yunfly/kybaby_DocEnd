@@ -1,0 +1,243 @@
+/**
+ * Created by windows on 2017/2/27.
+ * by yjl
+ */
+import ale from '../../../ale.js';
+import router from '../../../router/router.js';
+export default function (id) {
+  var postUrl = urlWay.kybaby + '/toHome/setOpenRes.action?whoLoginFlag=doctor';
+  var orderId=id;
+  var currentNodeId=null;//当前流程节点
+  var item_type=[];
+  var map_address='';//地址信息
+  var resultUnit='';//判断服务状态
+  return{
+    eventOnLoad: function () {
+
+    },
+    option: function (options,itemName,id) {//选择
+      var _this=this;
+      var option_select=options.split(',');
+      var html='';
+      for(var i= 0,len=option_select.length;i<len;i++){
+        html+='<div class="flex_cont flex_simple"><div>'+option_select[i]+'</div><p class="pay_type flex_item"></p></div> '
+      }
+      $('#div1').append('<p class="gray_title">'+itemName+'</p> ' +
+      '<div class="info_item go_type" id="go_type" data-id="'+id+'"> ' +
+      html+
+      '</div>').show();
+
+      $("#go_type").children(".flex_simple").eq(0).children("p").addClass("selected");
+
+      $('.go_type>div>p').unbind().click(function () {
+        $('.go_type>div>p').removeClass('selected');
+        $(this).addClass('selected');
+      });
+      $('#footer_btn p').text(itemName).unbind().click(function () {
+        _this.save();
+      });
+    },
+    input: function (itemName,id) {//输入
+      $('#div1').append('<p class="gray_title">'+itemName+'</p>' +
+      '<div class="change_why" data-id="'+id+'"> ' +
+      '<textarea></textarea> ' +
+      '</div>').show();
+    },
+    button: function (itemName,options) {//按钮
+      var _this=this;
+      if(options=='save'){
+        $('#footer_btn').show();
+        $('#footer_btn p').html(itemName).unbind().click(function () {
+          _this.save();
+        });
+      }else if(options=='insertData'){
+        $('#button_two').html(itemName).show().unbind().click(function () {
+          router.push({name:'order_details',params:{orderId:orderId}});
+        });
+      }
+    },
+    sign:function(){//签到
+      $.ajax({
+        type:'post',
+        url:urlWay.orderHost+'orderManager.action?whoLoginFlag=doctor',
+        cache:false,
+        async:true,
+        data:{
+          action:"doctorSign",
+          "orderInfo.id":orderId,
+          "doctorSignRecord.signAddress":map_address.poiaddress
+        },
+        success:function(result){
+
+        }
+      });
+    },
+    myText: function (itemName,handleUrl) {//文本
+      var s=handleUrl;
+      s=s.replace(/&lt;/g,"<"); //定义正则表达式
+      s=s.replace(/&gt;/g,">"); //定义正则表达式
+      $('#div3').html('<p class="big_title">'+itemName+'</p> ' +
+      '<div class="server_content">' +
+      s +
+      '</div>').show();
+    },
+    tencentMap: function (itemName) {//腾讯地图
+      var _this=this;
+      $('#footer_btn p').html(itemName).unbind().click(function () {
+        _this.save();
+      });
+      $('#div2').html('<iframe id="mapPage" width="100%" height="100%" frameborder=0 ' +
+      'src="http://apis.map.qq.com/tools/locpicker?search=0&type=1&mapdraggable=0&key=64DBZ-NLTKW-4ZGRN-OTENA-2TRPT-RSFIU&referer=kybaby">' +
+      '</iframe>').show().height($(document).height()-146-15);
+      var time=0;
+      window.addEventListener('message', function(event) {
+        // 接收位置信息，用户选择确认位置点后选点组件会触发该事件，回传用户的位置信息
+        map_address = event.data;
+        if (map_address && map_address.module == 'locationPicker') {//防止其他应用也会向该页面post信息，需判断module是否为'locationPicker'
+          if(time>0){
+            return;
+          }
+          $('#footer_btn').show();
+          time=0;
+        }
+      }, false);
+    },
+    save: function () {//保存
+      var _this=this;
+      var data=null;
+      data={
+        action:"saveOperatorFlowNodeInfo",
+        "toHomeFlowNodeInfo.orderId":orderId,
+        "toHomeFlowNodeInfo.orderStatus":resultUnit,
+        "toHomeFlowNodeInfo.currentNodeId":currentNodeId//当前节点id
+      };
+      for(var i= 0,len=item_type.length;i<len;i++){
+        if(item_type[i][2]=='按钮'){
+          continue;
+        }
+        data["toHomeFlowNodeInfo.orderResultList["+i+"].itemId"]=item_type[i][0];   //节点配置id
+        data["toHomeFlowNodeInfo.orderResultList["+i+"].itemResultName"]=item_type[i][1];   //节点配置名字
+        data["toHomeFlowNodeInfo.orderResultList["+i+"].resultUnit"]='';   //节点配置单位
+        switch (item_type[i][2]){
+          case '选择':
+            data["toHomeFlowNodeInfo.orderResultList["+i+"].resultValue"]=$('#go_type[data-id='+item_type[i][0]+']>div>p.selected').prev().text();  //用户输入选择结果
+            break;
+          case '多选':
+//                            data["toHomeFlowNodeInfo.orderResultList["+i+"].resultValue"]=$('#go_type>div>p.selected').prev().text();  //用户输入选择结果
+            break;
+          case '输入':
+            data["toHomeFlowNodeInfo.orderResultList["+i+"].resultValue"]=$('.change_why[data-id='+item_type[i][0]+']>textarea').val();  //用户输入选择结果
+            break;
+          case '地图':
+            //doorServiceTrack.sign();
+            data["toHomeFlowNodeInfo.orderResultList["+i+"].resultValue"]=map_address.poiaddress;  //用户输入选择结果
+            break;
+          case '文本':
+            //doorServiceTrack.sign();
+            data["toHomeFlowNodeInfo.orderResultList["+i+"].resultValue"]='';  //用户输入选择结果
+            break;
+        }
+      }
+      $.ajax({
+        type:'post',
+        url:postUrl,
+        cache:false,
+        async:true,
+        data:data,
+        success:function(result){
+          if(result.mes=='请登录'){
+            ale('请登录');
+            router.push('/login');
+          }else if(result.mes=='成功') {
+            _this.getOperatorFlowNodeInfo();
+          }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+
+        }
+      });
+    },
+    getOperatorFlowNodeInfo: function () {
+      var _this=this;
+      $.ajax({
+        type:'post',
+        url:postUrl,
+        cache:false,
+        async:true,
+        data:{
+          action:"getOperatorFlowNodeInfo",
+          "toHomeFlowNodeInfo.orderId":orderId
+        },
+        success:function(result){
+          if(result.mes=='请登录'){
+            ale('请登录');
+            router.push('/login');
+          }else if(result.mes=='成功') {
+            var toHomeFlowNodeInfo=result.toHomeFlowNodeInfo,
+              node_time=false,//当前流程节点与所有节点匹配点
+              progress_bar='',//节点html
+              operationFlowNodeList=toHomeFlowNodeInfo.operationFlowNodeList,//服务流程
+              toHomeNodeConfigInfoList=toHomeFlowNodeInfo.toHomeNodeConfigInfoList;//流程下的项目
+            currentNodeId=toHomeFlowNodeInfo.currentNodeId;//当前流程节点
+            //流程进度
+            if(operationFlowNodeList==null){
+              return;
+            }
+            for(var i= 0,len=operationFlowNodeList.length;i<len;i++){
+              var progress='';//进度
+              if(operationFlowNodeList[i].flowNodeId==currentNodeId){
+                node_time=true;
+                progress='green_now';
+              }
+              if(!node_time){
+                progress='green_after';
+              }
+              progress_bar+='<div class="flex_item gray_before '+progress+'">' +
+              operationFlowNodeList[i].flowNodeName +
+              '<span></span> ' +
+              '</div>';
+            }
+            $('#progress_bar>div').html(progress_bar);
+            //该节点下面的项目
+            if(toHomeNodeConfigInfoList==null){
+              return;
+            }
+            /*
+             * 选择【option】、多选【option】、文本【option】、地图【】、按钮、输入【】
+             * */
+            $('#div1,#div2,#div3,#button_two').empty().hide();
+            $('#footer_btn').hide();
+            item_type=[];
+            for(var j= 0,le=toHomeNodeConfigInfoList.length;j<le;j++){//节点总项目
+              var resultType=toHomeNodeConfigInfoList[j].itemResult.resultType;//类型
+              var itemName=toHomeNodeConfigInfoList[j].productItem.itemName;//项目名
+              var itemResultId=toHomeNodeConfigInfoList[j].productItem.id;//节点id
+              item_type.push([itemResultId,itemName,resultType]);
+              var options=toHomeNodeConfigInfoList[j].itemResult.options;
+              if(resultType=='选择'){
+                if(options!=null){
+                  _this.option(options,itemName,itemResultId);
+                }
+              }else if(resultType=='输入'){
+                _this.input(itemName,itemResultId);
+              }else if(resultType=='按钮'){
+                if(options=='save'){
+                  resultUnit=toHomeNodeConfigInfoList[j].itemResult.resultUnit;//用于判断服务状态
+                }
+                _this.button(itemName,options);
+              }else if(resultType=='地图'){
+                _this.tencentMap(itemName);
+              }else if(resultType=='文本'){
+                _this.myText(itemName,toHomeNodeConfigInfoList[j].productItem.handleUrl);
+              }
+            }
+            _this.eventOnLoad();
+          }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+
+        }
+      });
+    }
+  }
+};

@@ -1,0 +1,338 @@
+#container{
+  margin: 45px 0 50px;
+}
+.row{
+    width: 100%;
+    background-color: white;
+    overflow: hidden;
+    font-size: 1.2rem;
+    color: #9a9a9a;
+}
+.row label{
+    display: inline-block;
+    line-height: 55px;
+    margin-left: 5%;
+    width: 25%;
+    color: #333333;
+}
+.row input{
+    width: 60%;
+    margin-left: 2%;
+    border: none;
+    outline: none;
+    background:#fff;
+    color: #9a9a9a;
+    font-size: 1.2rem;
+}
+.row select{
+    width: 60%;
+    border: none;
+    outline: none ;
+    margin-left: 1.8%;
+    background: #fff;
+}
+.row img{
+   width: 100px;
+    height: 40px;
+    margin-left: 5%;
+}
+.row .tittle{
+    display: inline-block;
+    line-height: 25px;
+    margin-left: 5%;
+}
+.row ul{
+    list-style: none;
+    width: 95%;
+    margin-top: 5px;
+}
+.row ul li{
+    float: left;
+    text-align: left;
+    margin-left: 5%;
+    margin-bottom: 15px;
+}
+.blue{
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: white;
+    background-color: #13b9d7;
+    font-size: 0.875em;
+}
+.grey{
+    padding: 5px 10px;
+    border-radius: 5px;
+    background-color: #F7F7F7;
+    color: #969696;
+    font-size: 0.875em;
+}
+
+#showDoctor_img,#show_img{
+	/*border: 1px solid #C1C1C1;*/
+    position: absolute;
+    top: 5px;
+    left: 0;
+}
+#touxiang,#zhizhao{
+  float: left;
+  width: 70%;
+  height: 50px;
+  position:relative
+}
+#doctorCanvas,#myCanvas{
+  position: absolute;
+  top: 5px;
+  left: 0;
+	display:none;
+	width:40px;
+	height:40px;
+	 margin-left:5%;
+}
+#updateDoctorHeadFileElem,#updateMyHeadFileElem{
+  display: block;
+  height: 40px;
+  width: 40px;
+  position: absolute;
+  top: 5px;
+  opacity: 0;
+  z-index:2;
+}
+
+#promptDiv{
+    color: red;
+    font-size: 10px;
+    background: #fff;
+    text-align: center;
+    text-decoration: underline;
+    display:none;
+}
+/*ѡ��ҽԺ����*/
+#choosehospital{
+    position: fixed;
+    top: 50%;
+    left: 6%;
+    width: 88%;
+    height: 270px;
+    margin-top: -135px;
+    outline: 1px solid #13b9d7;
+    background: #fff;
+    font-size: 14px;
+    display:none;
+    z-index:10;
+}
+#areabox,#hosbox{
+    width: 100%;
+    line-height: 35px;
+    text-indent: 8px;
+    margin-top: 10px;
+    color: #A9A9A9;
+    margin-bottom: 10px;
+}
+#choosehospital label{
+	color: #13b9d7;
+}
+#areabox input{
+    width: 150px;
+    height: 25px;
+
+    margin-left: 18px;
+    background: #fff;
+    border: 1px solid #B3B3B3;
+    text-indent: 15px;
+}
+#hosbox select{
+	margin-left: 18px;
+	max-width: 220px;
+  height: 27px;
+	display: block;
+}
+.clib{
+    width: 80%;
+    margin: 40px auto 0;
+    background: #13b9d7;
+    color: #fff;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    border-radius: 4px;
+    font-size: 18px;
+}
+#choosehospital a{
+    text-indent: -999px;
+    display: inline-block;
+    width: 35px;
+    height: 35px;
+    background: url("../../../public/img/person_center/iconfont-guanbi.png") no-repeat center;
+    background-size: 35px;
+    float: right;
+}
+#choosehospital a:after{
+	content:"xx";
+	clear:both;
+}
+#areabox span{
+    display: inline-block;
+    width: 60px;
+    height: 27px;
+    background: #13b9d7 url("../../../public/img/person_center/iconfont-sousuo.png") no-repeat center;
+    background-size: 21px;
+    text-indent: -999px;
+    position: relative;
+    top: 4px;
+    border-radius: 4px;
+}
+/*8月8日新增*/
+.much_content{
+    padding: 10px 0;
+}
+.much_title{
+    margin-bottom: 8px;
+}
+#sex{
+    display: inline-block;
+    margin-left: 2%;
+    line-height: 12px;
+}
+#sex .sex_box{
+    display: inline-block;
+    float: left;
+    margin-right: 25px;
+}
+#sex span{
+    display: inline-block;
+    border: 1px solid #13b9d7;
+    width: 6px;
+    height: 6px;
+    border-radius: 6px;
+    vertical-align: 2px;
+}
+.sex_box.selected>span{
+    background: #13b9d7;
+}
+#the_massage{
+    display: none;
+}
+.header_right div{
+  float: right;
+  margin-right: 18px;
+}
+.header_right div span{
+  padding: 2px 10px;
+  border: 1px solid #ffffff;
+  border-radius: 14px;
+}
+#direction_information .information_div {
+  height: 55px;
+  width: 100%;
+}
+.information_div p{
+  line-height: 55px;
+  margin-right: 5%;
+  background: url('../../../public/img/contracted_user/right_btn.png') no-repeat right center;
+  background-size: 8px 14px;
+  padding-right: 20px;
+}
+.content_center{
+  display: -webkit-box;
+  -webkit-box-align: center;
+  -webkit-box-pack: center;
+}
+#bottom_save>p{
+  border: 1px solid #1CBA93;
+  border-radius: 20px;
+  font-size: 18px;
+  line-height: 45px;
+  color: #1CBA93;
+  text-align: center;
+}
+#bottom_save{
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 6px 10%;
+  background: #f4f4f4;
+}
+#layer_box{
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  background: rgba(0,0,0,.3);
+  display: none;
+}
+#layer_div{
+  position: absolute;
+  width: 80%;
+  top:15%;
+  left: 10%;
+  height: 70%;
+  max-height: 480px;
+  background: #fff;
+}
+#layer_div>div{
+  display: none;
+}
+.layer_title{
+  background: #13b9d7;
+  line-height: 45px;
+  font-size: 17px;
+  text-align: center;
+  color: #fff;
+}
+#layer_div ul{
+  overflow: auto;
+}
+.layer_list li,.layer_list_two li{
+  padding: 0 18px;
+  border-bottom: 1px solid #e8e8e8;
+  line-height: 45px;
+
+}
+.bottom_button{
+  margin: 10px 0;
+  position: absolute;
+  left: 10%;
+  bottom: 0px;
+  width: 80%;
+  line-height: 35px;
+  background: #fff;
+  border: 1px solid #13b9d7;
+  border-radius: 20px;
+  color: #13b9d7;
+  font-size: 17px;
+  text-align: center;
+}
+.text{
+  border: 1px solid #e8e8e8;
+}
+.hidden{
+  display: none;
+}
+.search_div{
+  background: #fff;
+  padding: 14px 18px;
+}
+.search_div>div{
+  padding: 0 14px;
+  height: 30px;
+  border: 1px solid #e8e8e8;
+  border-radius: 50px;
+}
+.search_div input{
+  border: none;
+  text-align: center;
+  background: none;
+}
+.search_div span{
+  display: inline-block;
+  background: url("../../../public/img/contracted_user/search_btn.png") no-repeat center;
+  background-size: 20px;
+  width: 27px;
+  height: 27px;
+}
+.green{
+  color: #13b9d7;
+}

@@ -1,0 +1,90 @@
+<template>
+  <div class="bgf8">
+    <div id="header" class="doctor_header">
+      <div class="header_Left" v-on:click="return_before()"><p></p></div>
+      <div class="header_center font18">推荐奖励</div>
+    </div>
+
+    <div id="container">
+      <div class="text-center">
+        <br><br><br>
+        <span class="font14">邀请好友扫一扫分享给TA</span>
+        <br><br><br><br>
+
+        <div id="code"></div></div>
+      <br><br><br>
+      <div class="sharebtn text-center" v-on:click="showShare()">
+
+        <img src="../../public/img/person_center/pyq.png" height="74" width="90"/>
+        <img src="../../public/img/person_center/weichat.png" height="74" width="90"/>
+        <img src="../../public/img/person_center/qzone.png" height="75" width="90"/>
+      </div>
+    </div>
+    <div class="tc-content" v-show="share" v-on:click="showShare()">
+      <img src="../../public/img/person_center/share.png" height="212" width="500"/>
+    </div>
+  </div>
+</template>
+<script>
+  import $ from 'jquery'
+  import '../../public/js/jquery.qrcode.min'
+  import recommend from '../../public/js/recommend'
+  export default{
+    data(){
+      return{
+        share:false,
+        doctorInfo:'',
+        tjUrl : urlWay.host+'main/login.html?',
+        Url:''
+    }
+    },
+    mounted: function () {
+      var that = this;
+      this.$ajax.post(host+'personZone.action', 'action=recommend'
+      )
+        .then(function (result) {
+          if(result.data.mes=='成功'){
+            that.doctorInfo = result.data.doctorInfo.id;
+            recommend(result.data.doctorInfo.doctorPhone,'推荐奖励','康优医生集团诚邀您的加入','注册通过审核并参会即有现金红包可以拿，邀请身边儿科/儿保医生加入，邀请1人翻1翻，邀请2人翻2翻，邀请N人翻N翻……');
+            that.Url = that.tjUrl+result.data.doctorInfo.id;
+          }
+        }).then(function () {
+        require ('../../public/js/jquery.qrcode.min');
+        that.qrcode();
+      })
+    },
+    methods:{
+      showShare:function(){
+        this.share = !this.share
+      },
+      qrcode () {
+          var that = this;
+        $("#code").qrcode({
+          text: this.Url,
+          width:150,
+          height:150
+        });
+      }
+
+
+    }
+  }
+</script>
+<style scoped>
+  .sharebtn img{  width: 36px;  height:auto;  padding: 0 7px;  }
+  .tc-content{
+    z-index:999;
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background-color: rgba(0,0,0,0.7);}
+  .tc-content img{
+    position: absolute;
+    top: 0;
+    width: 80%;
+    height: auto;
+    right: 18px;
+  }
+</style>

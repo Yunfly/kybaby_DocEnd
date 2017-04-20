@@ -1,0 +1,219 @@
+<template>
+  <div>
+    <div id="header" class="doctor_header">
+      <div class="header_Left" v-on:click="return_before()"><p></p></div>
+      <div class="header_center font18">开始会话</div>
+    </div>
+
+    <div id="input_box"  class="padding bgfff"  >
+      <div id="input_div" class="flex_cont flex_end control" ><i id="add_but" v-show="false"  v-on:click='other_content=!other_content'></i><p id="input_box_div" v-on:focus="other_content=false"  contenteditable="true" class="flex_item"></p><span id="send" class="ordinary_btn" v-on:click="sendmsg(1)">发送</span></div>
+      <div id="other_content" class="padding control" v-show=false>
+        <div class="other_item">
+          <ul class="flex_cont ">
+
+            <li class="flex_item"  @click="buildBusiness('family_doctor_patient.html','儿科门诊预约')">
+              <img src="../../public/img/consulting/ekmz.png" alt="">
+              儿科门诊
+            </li>
+            <li class="flex_item"  @click="buildBusiness('family_doctor_erbao.html','儿保门诊预约')">
+              <img src="../../public/img/consulting/ebmz.png" alt="">
+              儿保门诊
+            </li>
+            <li class="flex_item"  @click="buildBusiness('family_doctor_vaccine.html','计免预约')">
+              <img src="../../public/img/consulting/free.png" alt="">
+              计免
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  import $j from 'jquery'
+  import ale from '../../ale'
+  import illnessImpression from '../../component/consulting_illness_impression.vue'
+  export default{
+    data(){
+      return{
+        userId:this.$route.query.userId,
+        packageId:this.$route.query.packageId,
+        other_content:false
+      }
+    },
+    updated:function(){
+      $j('#container').scrollTop(1000000);
+      $j(window).scrollTop($j(document).height());
+    },
+    activated:function(){
+      this.userId =this.$route.query.userId;
+      this.packageId =this.$route.query.packageId;
+    },
+    methods: {
+      sendmsg(msgType){
+        var that = this;
+        var content = document.getElementById('input_box_div').innerText;
+        if (msgType == "1" && ($j("#input_box_div").text().trim() == "" || $j("#input_box_div").text().trim() == null)) {
+          ale("请输入要发送内容");
+        }else {
+            this.$ajax.post(urlWay.fdmanage + 'fdUserManage.action','action=replaysFirst&consult.fdServicePackage.id='+that.packageId+'&doctorReply='+content+'&userInfo.id='+that.userId)
+              .then(function(result){
+                  if(result.data.mes=='成功'){
+                    that.$router.push({ path: '/consulting/consulting_detail', query: {id:result.data.consult.logId,packageId:that.packageId,isTag:'false',userId:that.userId,userType:1}})
+                  } else {
+                      ale(result.data.mes)
+                  }
+              })
+          }
+        }
+      }
+    }
+</script>
+
+
+<style scoped>
+  .header_right .more_btn{
+    background: url("../../public/img/more_menu_btn.png") no-repeat center right 18px;
+    background-size: 20px;
+    height: 100%;
+  }
+  .other_item .flex_cont {
+    flex-wrap: wrap
+  }
+  .other_item ul li{
+    flex: 0 0 25%;
+    margin: 10px 0 0 0;
+    color: #9a9a9a;
+  }
+  .flex_item img{
+    width:initial;
+    display: block;
+    margin:0 auto 5px auto;
+  }
+  .flex_cont li img{
+    width: 36px;
+  }
+  #input_box_div{
+    padding-left:10px;
+    line-height:1.2rem;
+    width: 100%;
+    border: none;
+    background: #fff;
+    min-height: 20px;
+    max-height: 80px;
+    line-height: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 3px;
+    outline: 0;
+    font-size: 12px;
+    word-wrap: break-word;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-user-modify: read-write-plaintext-only;
+  }
+  .header_img>img{
+    width: 100%;
+  }
+  /*下方输入框*/
+  #input_box{
+    padding: 0 18px 12px 18px;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+  }
+  #input_box>#input_div{
+    padding: 8px;
+    border-bottom: 1px solid #e8e8e8;
+
+  }
+  #input_div>p{
+    padding-right: 6px;
+    outline: none;
+  }
+  #add_but{
+    margin-left: 8px;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background: url("../../public/img/consulting/consult_add.png")no-repeat center;
+    background-size: 100%;
+  }
+  #other_content{
+    padding: 12px 18px 0 18px;
+  }
+  .other_item{
+    text-align: center;
+    font-size: 12px;
+  }
+  .other_item>p{
+    margin-top: 5px;
+  }
+  #send{
+    height: 20px;
+  }
+  #showBusiness ul li img {
+    width: 40px;
+  }
+  #sendImg {
+    display: block;
+    width: 40px;
+    height: 40px;
+    position: relative;
+    top: -40px;
+    opacity: 0;
+    z-index: 2;
+  }
+  .ordinary_btn {
+    padding: 3px 5px 3px;
+    background: #0eced4;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #fff;
+  }
+  .send_img{
+    max-width: 145px;
+    text-align: center;
+    overflow: hidden;
+  }
+  .send_img>img{
+    max-height: 87px;
+  }
+  /*右边菜单栏*/
+  div#layer_menu{
+    position: absolute;
+    width: 103px;
+    border-radius: 3px;
+    background: rgba(0,0,0,.8);
+    color: #fff;
+    text-align: center;
+    right: 18px;
+    top: 37px;
+  }
+  div#layer_menu>div{
+    border-bottom: 1px solid #fff;
+    line-height: 36px;
+  }
+  div#layer_menu>div:last-child{
+    border-bottom: 0px;
+  }
+  span#black_triangle {
+    position: absolute;
+    top: -8px;
+    right: 2px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid rgba(0,0,0,.8);
+    text-align: center;
+  }
+  #layer_menu a{
+    color: #fff;
+  }
+  div#layer_menu.hidden{
+
+  }
+</style>

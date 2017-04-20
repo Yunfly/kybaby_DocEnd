@@ -1,0 +1,75 @@
+<template>
+<div>
+    <h2>我的角色</h2>
+    <p>首次注册请根据您的情况选择角色</p>
+
+    <router-link id="role_item" v-bind:to="{path:'/doctor_certification', query:{type:'医生', status:''}}">
+      <div id="role_item_div1">
+        <div>我是医生</div>
+      </div>
+    </router-link>
+
+    <router-link id="role_item" v-bind:to="{path:'/nurse_certification', query:{type:'护士', status:''}}">
+      <div id="role_item_div2">
+          <div>我是护士</div>
+      </div>
+    </router-link>
+
+    <router-link id="role_item" v-bind:to="{path:'/technician_certification', query:{type:'技师', status:''}}">
+      <div id="role_item_div3">
+          <div>我是技师</div>
+      </div>
+    </router-link>
+</div>
+</template>
+<style scoped>
+  h2{
+    margin: 35px 0;
+    color: #13b9d7;
+    font-weight: 400;
+    font-size: 25px;
+    text-align: center;
+  }
+  p{
+    color: #909090;
+    margin-bottom: 35px;
+    text-align: center;
+  }
+  img{
+    margin-top: 9px;
+  }
+  #role_item>div{
+    width: 90%;
+    margin: 20px auto;
+    color: #fff;
+    text-align: right;
+    font-size: 17px;
+    line-height: 45px;
+    border-radius: 23px;
+  }
+  #role_item_div1{
+    background: #FF9459;
+  }
+  #role_item_div2{
+    background: #1CBA93;
+  }
+  #role_item_div3{
+    background: #43D1CF;
+  }
+  #role_item>div>div{
+    margin: 0 auto;
+    width: 100px;
+  }
+  #role_item_div1>div{
+    background: url("../../public/img/person_center/icon_doctor.png")no-repeat left center;
+    background-size: 24px;
+  }
+  #role_item_div2>div{
+    background: url("../../public/img/person_center/icon_nurse.png")no-repeat left center;
+    background-size: 21px;
+  }
+  #role_item_div3>div{
+    background: url("../../public/img/person_center/icon_technician.png")no-repeat left center;
+    background-size: 22px;
+  }
+</style>

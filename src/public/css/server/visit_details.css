@@ -1,0 +1,32 @@
+section{
+    margin: 50px 0 158px;
+}
+#details_content{
+    margin-top: 8px;
+    line-height: 1.5;
+}
+#service_time{
+    line-height: 2rem;
+}
+footer#btn_area{
+    padding: 10px 40px 20px 40px;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    background: #f4f4f4;
+}
+#big_btn1,#big_btn2{
+    height: 44px;
+    line-height: 44px;
+    text-align: center;
+    border-radius: 3px;
+    margin-bottom: 20px;
+    color: #fff;
+}
+#big_btn1{
+    background: #008ba4;
+}
+#big_btn2{
+     background: #0eced4;
+ }

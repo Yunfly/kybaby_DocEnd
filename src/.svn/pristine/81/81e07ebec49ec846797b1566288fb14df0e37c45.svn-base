@@ -1,0 +1,26 @@
+<template>
+  <div class="bgf8">
+  <div id="header" class="doctor_header">
+    <div class="header_Left" v-on:click="return_before()"><p></p></div>
+    <div class="header_center font18">意见反馈</div>
+  </div>
+  <div id="container_full" class="bgfff">
+    <form action="">
+      <textarea name="" id="" class="font14"  rows="15"></textarea>
+      <div class="feedback_btn">
+        <button type="submit" id="cbUserAgreement" class="btn btn_block font16">提交</button>
+      </div>
+    </form>
+  </div>
+  </div>
+</template>
+
+<style scoped>
+  textarea{
+    border:none;
+    outline: none;
+    width: 100%}
+  .feedback_btn {
+    padding: 40px 40px 20px 40px;
+  }
+</style>

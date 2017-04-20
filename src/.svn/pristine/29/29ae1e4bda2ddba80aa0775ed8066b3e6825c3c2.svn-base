@@ -1,0 +1,332 @@
+<template>
+  <div>
+      <div id="header" class="doctor_header">
+        <div class="header_Left"><p @click="return_before()"></p></div>
+        <div class="header_center font18">{{circle_name}}</div>
+        <router-link v-bind:to="{path:'/service/doctor_circle/communion_circle/circle_post_edit', query:{id:circle_id,name:circle_name,type:circle_type}}">
+          <div class="header_right">
+            <div class="edit_logos" id="edit_logo"></div>
+          </div>
+        </router-link>
+      </div>
+      <div class="loop_img_box" id="loop_img_box">
+        <div class="swiper-container swiper-container-horizontal" id="loop_img">
+          <div class="swiper-wrapper">
+            <div class="swiper-slide" data-swiper-slide-index="0">
+              <img src="../../public/img/communion_circle/loop_img.png" class="img-responsive">
+            </div>
+            <div class="swiper-slide" data-swiper-slide-index="1">
+              <img src="../../public/img/communion_circle/loop_img.png" class="img-responsive">
+            </div>
+            <div class="swiper-slide" data-swiper-slide-index="2">
+              <img src="../../public/img/communion_circle/loop_img.png" class="img-responsive">
+            </div>
+          </div>
+        </div>
+        <!-- Add Pagination -->
+        <div id="loop_img_pagin" class="swiper-pagination swiper-pagination-clickable swiper-pagination-bullets"></div>
+      </div>
+      <div class="menu_list_box">
+        <div class="menu_list">
+          <div class="header_menu_box content_center">
+            <span class="menu_item font14 menu_item_active" v-on:click="getAllConsult()">全部</span>
+            <span class="menu_item font14" v-on:click="getLabelList(item[0])" v-for="item in circles_label">{{item[1]}}</span>
+          </div>
+          <p class="gray_3"></p>
+          <div class="gray_mask"></div>
+        </div>
+      </div>
+
+      <div id="container" class="container_box">
+        <div class="content_list_box">
+          <div class="list_model" v-for="(item, index) in circles_list">
+            <router-link v-bind:to="{path:'/service/doctor_circle/communion_circle/circle_post_text', query:{id:item[0]}}">
+              <div class="list_model_imgs">
+                <img v-if="item[6] != ''" v-bind:src=imgUrl+item[6] class="img-responsive">
+                <img v-else src="../../public/img/communion_circle/list_img.png" class="img-responsive">
+                <div class="list_model_time">
+                  <p class="model_time font10">{{item[3]}}</p>
+                </div>
+              </div>
+              <div class="list_model_text">
+                <p class="text font12">{{item[1]}}</p>
+                <div class="list_model_menu">
+                  <span class="list_model_label font10" v-for="(eq, icon) in list_label[index]" v-bind:class="{mt5 : icon > 0}">{{eq[1]}}</span>
+                  <span class="list_model_author paragraph font10">{{item[2]}}</span>
+                  <div class="list_model_number paragraph font10 right content_center">
+                    <p class="read_btn">{{item[4]}}</p>
+                    <p class="message_btn">{{item[5]}}</p>
+                    <p class="fabulous_btn"></p>
+                  </div>
+                </div>
+              </div>
+            </router-link>
+          </div>
+        </div>
+    </div>
+  </div>
+</template>
+<script>
+  import $ from 'jquery'
+  import Swiper from 'swiper'
+  require('../../public/css/swiper.min.css');
+
+  export default {
+    data() {
+      return {
+        imgUrl : urlWay.fileserver,
+        defalutImg : "../../public/img/communion_circle/list_img.png",
+        circle_id : '',
+        circle_name : '',
+        circle_type : 'Y',
+        circles_label : [],
+        circles_list : [],
+        list_label : [],
+        list_img : []
+      }
+    },
+    components : {
+
+    },
+    created : function () {
+      this.circle_id = this.$route.query.id;
+      this.circle_name = this.$route.query.name;
+//      this.circle_type = this.$route.query.type;
+
+      this.getAllLabel(this.circle_type);
+      this.getAllConsult();
+    },
+    mounted () {
+      var swiper = new Swiper('#loop_img', {
+        pagination: '#loop_img_pagin',
+        slidesPerView: 1,
+        paginationClickable: true,
+        spaceBetween: 0,
+        loop : true,
+        speed : 500,
+        autoplay : 3000,
+        autoplayDisableOnInteraction : false
+      });
+    },
+    methods : {
+      getAllLabel : function (type) {
+        var that = this;
+        this.$ajax.post(ringHost+'getDoctorRringInfo.action',"action=allDoctorRingLabelInfo&ringCategory="+type)
+        .then(function(result){
+          if(result.data.mes=="操作成功") {
+            that.circles_label = result.data.someCategoryRingLabelObject;
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      },
+      getLabelList : function (type) {
+        var that = this;
+        var id= this.circle_id;
+
+        this.$ajax.post(ringHost+'getDoctorRringInfo.action',"action=postInfoScreen&doctorRingId="+id+"&doctorRingLableId="+type)
+        .then(function(result){
+          if(result.data.mes=="操作成功") {
+            that.circles_list = result.data.somePostInfo;
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      },
+      getAllConsult : function (id) {
+        var that = this;
+        var id = this.circle_id;
+
+        this.$ajax.post(ringHost+'getDoctorRringInfo.action',"action=turnTo&ringTypeId="+id)
+          .then(function(result){
+            if(result.data.mes=="操作成功") {
+              that.circles_list = result.data.somePostInfo;
+              that.list_label = result.data.postInfoLinkesLabels;
+
+              for(var i = 0; i < that.circles_list.length; i++) {
+                that.list_img.push({
+                  "imgurl" : (that.circles_list[i][6] != "" ? that.circles_list[i][6] : that.defalutImg)
+                });
+              }
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      }
+    }
+  }
+
+</script>
+<style scoped>
+  .content_center{
+    display: -webkit-box;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+  }
+  .edit_logos{
+    background: url("../../public/img/communion_circle/edit_btn.png") no-repeat right 18px center;
+    background-size: 20px;
+    height: 45px;
+  }
+  .loop_img_box{
+    margin-top: 45px;
+    width: 100%;
+  }
+  #loop_img_box .swiper-container, #loop_img_box .swiper-container .swiper-wrapper,#loop_img_box .swiper-container .swiper-wrapper .swiper-slide{
+    width: 100%;
+    height: 100%;
+  }
+  #loop_img_box{
+    position: relative;
+  }
+  #loop_img_pagin{
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+  }
+  .menu_list_box{
+    margin: 0;
+    width: 100%;
+    background: #f8f8f8;
+    z-index: 999;
+  }
+  .menu_fixed{
+    position: fixed;
+    left: 0;
+    top: 45px;
+    margin: 0;
+  }
+  .menu_list{
+    position: relative;
+    padding: 0px 18px;
+    margin-bottom: 15px;
+  }
+  .gray_mask{
+    position: absolute;
+    right: 7px;
+    top: 8px;
+    width: 1px;
+    height: 18px;
+    box-shadow: -10px 0px 10px 10px rgba(248,248,248,1);
+  }
+  .header_menu_box{
+    padding: 15px 0 6px 0;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+  }
+  p.gray_3{
+    margin-top: -3px;
+  }
+  #container.container_box{
+    margin: 0;
+    background: none;
+  }
+  .menu_item{
+    color: #9a9a9a;
+    padding: 10px 15px 5px 10px;
+  }
+  .menu_item_active{
+    color: #13b9d7;
+    border-bottom: 1px solid #13b9d7;
+    z-index: 9;
+  }
+  .header_menu_box .gray_3{
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    background: #eeeeee;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .content_list_box{
+    padding: 0 18px;
+    border-radius: 6px;
+  }
+  .list_model{
+    padding: 10px;
+    margin-bottom: 10px;
+    background: #ffffff;
+    border-radius: 6px;
+    box-shadow: 0px 0px 6px 0px rgba(225,225,225,0.3);
+  }
+  .list_model_imgs{
+    position: relative;
+    width: 100%;
+  }
+  .list_model_time{
+    position: absolute;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+    background: -moz-linear-gradient(top, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0));
+    background: -webkit-linear-gradient(bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0));
+    background: -o-linear-gradient(top, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0));
+  }
+  .model_time{
+    padding: 20px 0 5px;
+    margin-right: 10px;
+    color: #ffffff;
+    text-align: right;
+  }
+  .list_model_text{
+    width: 100%;
+    margin-top: 10px;
+  }
+  .list_model_menu{
+    width: 100%;
+    margin: 10px 0;
+  }
+  .list_model_label, .list_model_author{
+    padding: 5px;
+  }
+  .list_model_label{
+    border-radius: 6px;
+    color: #ffffff;
+    background: #0edec4;
+  }
+  .mt5{
+    margin-left: 5px;
+  }
+  .left{
+    float: left;
+  }
+  .right{
+    float: right;
+  }
+  .list_model_number{
+    height: 100%;
+  }
+  .read_btn{
+    background: url("../../public/img/communion_circle/read_btn.png") no-repeat left center;
+    background-size: 15px 12px;
+  }
+  .message_btn{
+    background: url("../../public/img/communion_circle/message_btn.png") no-repeat left center;
+    background-size: 12px 12px;
+  }
+  .fabulous_btn{
+    background: url("../../public/img/communion_circle/fabulous_btn.png") no-repeat left center;
+    background-size: 11px 12px;
+  }
+  .list_model_number{
+    padding: 0;
+  }
+  .list_model_number p{
+    padding-left: 18px;
+    margin-left: 3px;
+  }
+  .list_model_number .read_btn{
+    margin-left: 0px;
+  }
+  img{
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+</style>

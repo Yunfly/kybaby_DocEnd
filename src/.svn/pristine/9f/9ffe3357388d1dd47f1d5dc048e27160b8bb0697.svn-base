@@ -1,0 +1,142 @@
+<template>
+  <div>
+    <div id="header" class="doctor_header">
+      <div class="header_Left" v-on:click="return_before"><p></p></div>
+      <div class="header_center font18">个人资料</div>
+    </div>
+
+    <div id="container">
+      <div class="header_img">
+        <img v-bind:src=imgUrl+doctorInfo.doctorImage>
+      </div>
+      <div class="person">
+        <p>{{doctorInfo.doctorName}}</p>
+        <span>{{doctorInfo.department}}   {{doctorInfo.doctorTitle}}   {{doctorInfo.clinicalExperience}}年+</span>
+      </div>
+      <p class="gray_1"></p>
+      <div class="flex_cont pro_box text-center">
+        <div class="flex_item flex_simple">
+          <span class="font12">专业方向</span>
+          <p class="paragraph">{{doctorInfo.department}}</p>
+        </div>
+        <div></div>
+        <div class="flex_item flex_simple">
+          <span class="font12">擅长领域</span>
+          <p class="paragraph">{{doctorInfo.department}}</p>
+        </div>
+      </div>
+      <p class="gray_1"></p>
+      <div class="detail">
+        <span class="text_indent font12">简介</span>
+        <p class="gray_3"></p>
+        <p id="margin_top" class="text_indent">{{doctorInfo.doctorComment}}</p>
+      </div>
+    </div>
+
+    <div class="qr_Code">
+      <div id="code"></div>
+    </div>
+  </div>
+</template>
+
+<script>
+
+  export default{
+    data(){
+      return{
+        doctorInfo:{
+          octorImage:'../../public/img/home/headimg.jpg',
+          licenseImage:'../../public/img/qrcode.png'
+        },
+        imgUrl : urlWay.fileserver,
+      }
+    },
+    created:function(){
+      this.getwebsocketDoctorId();
+    },
+    mounted: function () {
+      this.$nextTick(function () {
+        require ('../../public/js/jquery.qrcode.min');
+        this.qrcode();
+      })
+    },
+    methods:{
+      qrcode () {
+        $("#code").qrcode({
+          text: this.imgUrl,
+          width:120,
+          height:120
+        });
+      }
+    }
+  }
+</script>
+
+<style scoped>
+  body{
+    background: #f8f8f8;
+  }
+  #container {
+    margin: 45px 0 50px 0;
+    background-color: #fff;
+    padding-bottom:10px;
+  }
+  .person p {
+    color: #333;
+    text-align: center;
+    margin-top: 30px;
+    white-space:nowrap;
+  }
+  #margin_top{
+    margin-top: 8px;
+  }
+  .person span {
+    display: block;
+    font-size: 1.2rem;
+    text-align:center;
+    color: #9a9a9a;
+    margin-top: 10px;
+    white-space:nowrap;
+    margin-bottom:10px;
+  }
+  .header_img{
+    display: inline-block;
+    position: relative;
+    top: 20px;
+    width: 100%;
+    text-align: center;
+  }
+  .header_img img{
+    border-radius:50%;
+    height:65px;
+    width:65px;
+    box-shadow: 0px 0px 5px 2px rgba(0,141,167,0.3)
+  }
+  .pro_box div{
+    padding: 10px 0;
+  }
+  .pro_box span{
+    display: inline-block;
+    margin-bottom:5px;
+  }
+  .detail{
+    margin:0 18px;
+  }
+  .detail span{
+    line-height:3.4rem;
+  }
+  .detail p{
+    line-height:2.1rem;
+    color: #9a9a9a;
+    font-size:1.4rem;
+  }
+  .qr_Code{
+    width: 100%;
+    height: auto;
+    text-align: center;
+  }
+  .qr_Code img{
+    width:100px;
+    height:auto;
+  }
+</style>

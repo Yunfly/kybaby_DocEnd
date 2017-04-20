@@ -1,0 +1,168 @@
+<template xmlns:v-on="http://www.w3.org/1999/xhtml">
+  <div>
+    <div id="header" class="doctor_header">
+      <div class="header_Left" @click="return_before()"><p></p></div>
+      <div class="header_center font18">上门订单列表</div>
+      <div class="header_right">
+        <router-link :to="{path:'/door_reassign_record'}">
+          <div class="more_btn"></div>
+        </router-link>
+      </div>
+    </div>
+    <div id="container_full">
+      <div class="order_list" v-for="item in orderInfoList">
+        <router-link :to="{path:'/door_orderDetail',query: {id:item.id}}">
+          <div class="order_title flex_cont">
+            <div class="flex_item paragraph">{{item.submitTime}}</div>
+            <div class="flex_item text-right paragraph">{{item.orderStatus}}</div>
+          </div>
+          <p class="gray_3"></p>
+          <div class="order_item flex_cont flex_simple">
+            <div class="flex_item ">
+              <img  :src="item.consultBabyInfo.headImg?(imgUrl+ item.consultBabyInfo.headImg):(imgUrl+headImgs)" />
+            </div>
+            <div class="flex_item">
+              <dl>
+                <dt class="font12">{{item.product.name}}</dt>
+                <dd class="paragraph font10">
+                  {{item.contactName}}   {{item.contactPhone}}
+                </dd>
+                <dd class="paragraph font10">
+                  {{item.contactDetailAddress}}
+                </dd>
+                <dd class="paragraph font10">
+                  上门时间 : {{item.bespokeDate}} {{item.bespokeTime}}
+                </dd>
+              </dl>
+            </div>
+          </div>
+          <p class="gray_3"></p>
+        </router-link>
+        <div class="list_btn float-right">
+          <p v-if="item.orderStatus=='已派单' && (timeDifference(item.bespokeDate+' '+item.bespokeTime.substr(0,5)+':00',currentTime)) && item.orderChangeRecord!='已申请'">
+            <button class="btn" v-on:click="change(item.id)">改派申请</button>
+            <router-link :to="{path:'/door_health_records',query: {id:item.id}}">
+              <button class="btn">查看档案</button>
+            </router-link>
+            <router-link :to="{path:'/door_service_track',query: {id:item.id}}">
+              <button class="btn">服务跟踪</button>
+            </router-link>
+          </p>
+          <p v-else-if="(item.orderStatus=='已派单' && !(timeDifference(item.bespokeDate+' '+item.bespokeTime.substr(0,5)+':00',currentTime)) && item.orderChangeRecord!='已申请')||item.orderStatus=='服务中'">
+            <router-link :to="{path:'/door_health_records',query: {id:item.id}}">
+              <button class="btn">查看档案</button>
+            </router-link>
+            <router-link :to="{path:'/door_service_track',query: {id:item.id}}">
+              <button class="btn">服务跟踪</button>
+            </router-link>
+          </p>
+          <p v-else-if="item.orderStatus=='已派单' && (timeDifference(item.bespokeDate+' '+item.bespokeTime.substr(0,5)+':00',currentTime)) && item.orderChangeRecord=='已申请'">
+            <button class="btn" v-on:click="change(item.id)">改派申请</button>
+          </p>
+          <p v-else-if="(item.orderStatus=='已派单' && !(timeDifference(item.bespokeDate+' '+item.bespokeTime.substr(0,5)+':00',currentTime)) && item.orderChangeRecord=='已申请')||item.orderStatus.indexOf('取消')>-1"></p>
+          <p v-else>
+            <router-link :to="{path:'/door_service_track',query: {id:item.id}}">
+              <button class="btn">服务跟踪</button>
+            </router-link>
+          </p>
+        </div>
+        <div class="cf"></div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  export default{
+    data(){
+      return{
+        orderInfoList:'',
+        imgUrl : urlWay.fileserver,
+        headImgs:'/kybabyBG/admin/images/userFaceIcon/lt_user.png',
+        orderStatus:'',
+        url:'',
+        startTime:'',
+        currentTime:'',
+        status:''
+      }
+    },
+    activated:function(){
+      var that = this;
+      this.$ajax.post(urlWay.orderHost + 'orderChangeRecord.action?whoLoginFlag=doctor','action=getOrderInfoList')
+        .then(function(res){
+          that.orderInfoList = res.data.orderInfoList;
+          that.currentTime=new Date();
+        });
+    },
+    methods: {
+      change:function(id){
+        var that = this;
+        this.$ajax.post(urlWay.orderHost + 'orderChangeRecord.action?whoLoginFlag=doctor',
+            'action=getOrderChangeRecordByDoctorId&orderInfo.id='+id)
+          .then(function(res){
+            that.content = res.data;
+            if(that.content.mes == "成功") {
+              if (that.content.orderChangeRecordList == null) {
+                return;
+              }else{
+                if(that.content.orderChangeRecordList.length==0 || that.content.orderChangeRecordList[0].status=="已关闭"){
+                  that.url = '/door_apply_change';
+                }else if(that.content.orderChangeRecordList[0].status=="已申请"){
+                  that.url = '/door_reassign_record';
+                }
+              }
+              that.$router.push({path:that.url,query:{id:id}});
+            }else if(that.content.mes == "已超时"){
+              alert('上门前4小时内不能发起改派');
+            }
+          })
+      },
+      timeDifference:function(orderTime,now){//服务时间与当前时间差
+        var startTime=new Date(orderTime);
+        var difference=(startTime.getTime()-now.getTime())/3600000;
+        if(difference<4){
+          return false;
+        }
+        return true;
+      }
+    }
+  }
+</script>
+
+<style scoped>
+  .header_right .more_btn{
+    background: url("../../public/img/more_menu_btn.png") no-repeat center right 18px;
+    background-size: 20px;
+    height: 100%;
+  }
+  .order_item .flex_item:nth-child(1){
+    flex:0 0 20%;
+  }
+  .order_item .flex_item:nth-child(2){
+    padding-left:20px;
+  }
+  .order_item img{
+    border-radius: 50%;
+  }
+  .order_title div{
+    padding:5px 8px;
+  }
+  /*.flex_item dl{*/
+  /*padding-bottom:5px;*/
+  /*}*/
+  .flex_item dl dd,.flex_item dl dt{
+    line-height: 2rem;
+  }
+  .list_btn .btn{
+    height:29px;
+  }
+  .list_btn{
+    padding:5px 0;
+    margin-right: 6px;
+  }
+  .order_list{
+    margin-bottom: 8px;
+    background: #fff;
+    padding: 0 18px;
+  }
+</style>

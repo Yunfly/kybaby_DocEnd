@@ -1,0 +1,68 @@
+<!doctype html>
+<html class="no-js" lang="zh-cn">
+<head>
+    <title>修改手机号</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1"/>
+    <link rel="stylesheet" href="../public/css/normalize.css">
+    <link rel="stylesheet" href="../public/css/main.css">
+    <link rel="stylesheet" href="../public/css/register/register.css">
+    <style>
+        .register_list .font14{  flex: 0 0 32%  }
+        .register_list .btn{position: absolute; right: 10px }
+        .register_list input { padding-left: 3%;}
+        .gray_3{
+            width:90% !important;
+            margin:0 auto;}
+    </style>
+</head>
+
+<body class="bgfff">
+<div id="header" class="doctor_header">
+    <div class="header_Left" onclick="return_before()"><p></p></div>
+    <div class="header_center font18">修改手机号</div>
+</div>
+<div id="container_full">
+    <form action="" id="changePassword" method="post">
+        <div class="phone_box">
+            <div class="register_list flex_cont flex_simple">
+                <div class="font14"><span>手机号 :</span></div>
+                <input type="text" name="regist_phone" id="regist_phone" class="flex_simple" placeholder="请输入手机号">
+            </div>
+            <p class="gray_3"></p>
+            <div class="register_list flex_cont flex_simple">
+                <div class="font14">验证码 :</div>
+                <input type="text" class="flex_simple" placeholder="请输入验证码">
+                <button type="button" class="btn " disabled id="get_code">获取验证码</button>
+            </div>
+            <p class="gray_3"></p>
+            <div class="register_list flex_cont flex_simple">
+                <div class="font14">新密码 :</div>
+                <input type="text" name="regist_phone" id="regist_phone" class="flex_simple" placeholder="请输入新密码">
+            </div>
+            <p class="gray_3"></p>
+            <div class="register_list flex_cont flex_simple">
+                <div class="font14">确认新密码 :</div>
+                <input type="text" name="regist_phone" id="regist_phone" class="flex_simple" placeholder="请确认新密码">
+            </div>
+            <p class="gray_3"></p>
+        </div>
+
+        <div class="register_btn">
+            <button type="submit" id="cbUserAgreement" class="btn btn_block font16">确定</button>
+        </div>
+    </form>
+</div>
+<script src="../public/js/modernizr-2.8.3.min.js"></script>
+<script src="../public/js/jquery-2.1.3.js"></script>
+<script src="../public/js/main.js"></script>
+<script src="../public/js/config.js"></script>
+<script src="../public/js/jquery_validation/jquery.validate.js"></script>
+<script src="../public/js/jquery_validation/validate-methods.js"></script>
+<script src="../public/js/jquery_validation/messages_zh.js"></script>
+<script src="../public/js/register/register.js"></script>
+<script>
+
+</script>
+</body>
+</html>

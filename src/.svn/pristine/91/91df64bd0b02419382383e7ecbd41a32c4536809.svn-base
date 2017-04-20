@@ -1,0 +1,385 @@
+<template>
+<div>
+    <div class="header_box">
+        <div id="header" class="doctor_header">
+            <div class="header_Left"><p @click="return_before()"></p></div>
+            <div class="header_center font18">我的帖子</div>
+            <div class="header_right"></div>
+        </div>
+        <div class="content_tab_box flex_cont bgf8" data-type="0">
+            <p class="tab_menu flex_item text-center font14" v-bind:class="{'tab_menu_active' : isShow == '1'}" v-on:click="tabMenu('1')">所有帖子</p>
+            <p class="tab_menu flex_item text-center font14" v-bind:class="{'tab_menu_active' : isShow == '2'}" v-on:click="tabMenu('2')">我的发帖</p>
+            <p class="tab_menu flex_item text-center font14" v-bind:class="{'tab_menu_active' : isShow == '3'}" v-on:click="tabMenu('3')">我的回帖</p>
+        </div>
+        <div class="tab_box flex_cont bgf8">
+          <div class="content_center flex_item">
+            <transition
+              name="list-animate1"
+              enter-active-class="animated bounceInLeft"
+            >
+              <div class="tab_logo" v-if="isShow == '1'"></div>
+            </transition>
+          </div>
+          <div class="content_center flex_item">
+            <transition
+              name="list-animate2"
+              enter-active-class="animated bounceInLeft"
+            >
+              <div class="tab_logo" v-if="isShow == '2'"></div>
+            </transition>
+          </div>
+          <div class="content_center flex_item">
+            <transition
+              name="list-animate3"
+              enter-active-class="animated bounceInRight"
+            >
+              <div class="tab_logo" v-if="isShow == '3'"></div>
+            </transition>
+          </div>
+        </div>
+    </div>
+    <div id="container" class="container_box bgf8">
+      <transition
+        name="list-animate1"
+        enter-active-class="animated bounceInLeft"
+      >
+        <div class="content_list_box" v-if="isShow == '1'">
+          <!--所有帖子--发帖-->
+          <div class="list_model" v-for="item in send_post">
+            <router-link v-bind:to="{path:'/service/doctor_circle/communion_circle/circle_post_text', query:{id:item[0]}}">
+              <div class="list_model_imgs">
+                <img src="../../public/img/communion_circle/list_img.png" class="img-responsive">
+                <div class="list_model_time">
+                  <p class="model_time font12">{{item[3]}}</p>
+                </div>
+              </div>
+              <div class="list_model_text">
+                <p class="text font12">{{item[1]}}</p>
+                <div class="list_model_menu">
+                  <span class="list_model_label font10">学术研究</span>
+                  <span class="list_model_author paragraph font10">{{item[2]}}</span>
+                  <div class="list_model_number paragraph font10 right content_center">
+                    <p class="read_btn">{{item[4]}}</p>
+                    <p class="message_btn">{{item[5]}}</p>
+                    <p class="fabulous_btn"></p>
+                  </div>
+                </div>
+              </div>
+            </router-link>
+          </div>
+          <!--所有帖子--回帖-->
+          <div class="list_model" v-for="item in reply_post">
+            <router-link v-bind:to="{path:'/service/doctor_circle/communion_circle/circle_post_text', query:{id:item[0]}}">
+              <div class="list_model_imgs">
+                <img src="../../public/img/communion_circle/list_img.png" class="img-responsive">
+                <div class="list_model_time">
+                  <p class="model_time font12">{{item[3]}}</p>
+                </div>
+              </div>
+              <div class="list_model_text">
+                <p class="text font12">{{item[1]}}</p>
+                <div class="list_model_menu">
+                  <span class="list_model_label font10">学术研究</span>
+                  <span class="list_model_author paragraph font10">{{item[2]}}</span>
+                  <div class="list_model_number paragraph font10 right content_center">
+                    <p class="read_btn">{{item[4]}}</p>
+                    <p class="message_btn">{{item[5]}}</p>
+                    <p class="fabulous_btn"></p>
+                  </div>
+                </div>
+              </div>
+            </router-link>
+          </div>
+        </div>
+      </transition>
+      <transition
+        name="list-animate2"
+        enter-active-class="animated bounceInLeft"
+      >
+        <div class="content_list_box" v-if="isShow == '2'">
+          <div class="list_model" v-for="item in send_post">
+            <router-link v-bind:to="{path:'/service/doctor_circle/communion_circle/circle_post_text', query:{id:item[0]}}">
+              <div class="list_model_imgs">
+                <img src="../../public/img/communion_circle/list_img.png" class="img-responsive">
+                <div class="list_model_time">
+                  <p class="model_time font12">{{item[3]}}</p>
+                </div>
+              </div>
+              <div class="list_model_text">
+                <p class="text font12">{{item[1]}}</p>
+                <div class="list_model_menu">
+                  <span class="list_model_label font10">学术研究</span>
+                  <span class="list_model_author paragraph font10">{{item[2]}}</span>
+                  <div class="list_model_number paragraph font10 right content_center">
+                    <p class="read_btn">{{item[4]}}</p>
+                    <p class="message_btn">{{item[5]}}</p>
+                    <p class="fabulous_btn"></p>
+                  </div>
+                </div>
+              </div>
+            </router-link>
+          </div>
+        </div>
+      </transition>
+      <transition
+        name="list-animate3"
+        enter-active-class="animated bounceInRight"
+      >
+        <div class="content_list_box" v-if="isShow == '3'">
+          <div class="list_model" v-for="item in reply_post">
+            <router-link v-bind:to="{path:'/service/doctor_circle/communion_circle/circle_post_text', query:{id:item[0]}}">
+              <div class="list_model_imgs">
+                <img src="../../public/img/communion_circle/list_img.png" class="img-responsive">
+                <div class="list_model_time">
+                  <p class="model_time font12">{{item[3]}}</p>
+                </div>
+              </div>
+              <div class="list_model_text">
+                <p class="text font12">{{item[1]}}</p>
+                <div class="list_model_menu">
+                  <span class="list_model_label font10">学术研究</span>
+                  <span class="list_model_author paragraph font10">{{item[2]}}</span>
+                  <div class="list_model_number paragraph font10 right content_center">
+                    <p class="read_btn">{{item[4]}}</p>
+                    <p class="message_btn">{{item[5]}}</p>
+                    <p class="fabulous_btn"></p>
+                  </div>
+                </div>
+              </div>
+            </router-link>
+          </div>
+        </div>
+      </transition>
+    </div>
+  </div>
+</template>
+<script>
+  import $ from "jquery"
+  export default {
+    data () {
+      return {
+        imgUrl : urlWay.fileserver,
+        isShow : "1",
+        isHide : true,
+        send_post : "",
+        reply_post : ""
+      }
+    },
+    components : {
+
+    },
+    activated : function () {
+      this.getSendPostList();
+      this.getReplyPostList();
+    },
+    mounted : function () {
+
+    },
+    methods : {
+      getSendPostList : function () {
+        var that = this;
+
+        this.$ajax.post(ringHost+'getDoctorRringInfo.action',"action=mySendPostInfo")
+        .then(function(result){
+          if(result.data.mySendSomePostInfo != null) {
+            that.send_post = result.data.mySendSomePostInfo;
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      },
+      getReplyPostList : function () {
+        var that = this;
+
+        this.$ajax.post(ringHost+'getDoctorRringInfo.action',"action=myReplyPostInfo")
+        .then(function(result){
+          if(result.data.myReplySomePostInfo != null) {
+            that.reply_post = result.data.myReplySomePostInfo;
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      },
+      tabMenu : function (value) {
+        this.isShow = value;
+      }
+    }
+  }
+</script>
+<style scoped>
+  .header_box{
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    z-index: 999;
+  }
+  .content_center{
+    display: -webkit-box;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+  }
+  .hidden{
+    display: none;
+  }
+  .content_tab_box{
+    margin: 45px 18px 0;
+  }
+  .tab_menu{
+    padding: 10px 0 5px;
+    color: #c2c2c2;
+  }
+  .tab_menu_active{
+    color: #13b9d7;
+  }
+  .tab_box{
+    margin: 0 18px 0;
+    z-index: 999;
+  }
+  .tab_logo_move{
+    margin-left: 50%;
+  }
+  .tab_logo_box{
+    width: 50%;
+  }
+  .tab_logo{
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid #ffffff;
+    text-align: center;
+  }
+  .content_list_box{
+    border-radius: 6px;
+  }
+  .list_model{
+    padding: 15px 10px;
+    background: #ffffff;
+  }
+  .list_model_img{
+    width: 54px;
+    height: 54px;
+    margin-right: 10px;
+  }
+  .img_box{
+    width: 100%;
+    height: 100%;
+  }
+  .list_model_img, .list_model_img img{
+    border-radius: 50%;
+  }
+  .single_ellipsis{
+    overflow: hidden;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+  }
+  .item_cont{
+    width: 100%;
+    height: 19px;
+    line-height: 1.5;
+  }
+  #container.container_box{
+    margin: 87px 0 0;
+  }
+  .menu_item{
+    color: #9a9a9a;
+    padding: 10px 15px 5px 10px;
+  }
+  .menu_item_active{
+    color: #13b9d7;
+    border-bottom: 1px solid #13b9d7;
+    z-index: 9;
+  }
+  .header_menu_box .gray_3{
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    background: #eeeeee;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .content_list_box{
+    margin: 0 18px;
+    border-radius: 6px;
+  }
+  .list_model{
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    box-shadow: 0px 0px 6px 0px rgba(225,225,225,0.3);
+  }
+  .list_model_imgs{
+    position: relative;
+    width: 100%;
+  }
+  .list_model_time{
+    position: absolute;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+    background: -moz-linear-gradient(top, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0));
+    background: -webkit-linear-gradient(bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0));
+    background: -o-linear-gradient(top, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0));
+  }
+  .model_time{
+    padding: 20px 0 5px;
+    margin-right: 10px;
+    color: #ffffff;
+    text-align: right;
+  }
+  .list_model_text{
+    width: 100%;
+    margin-top: 10px;
+  }
+  .list_model_menu{
+    width: 100%;
+    margin: 10px 0;
+  }
+  .list_model_label, .list_model_author{
+    padding: 5px;
+  }
+  .list_model_label{
+    border-radius: 6px;
+    color: #ffffff;
+    background: #0edec4;
+  }
+  .left{
+    float: left;
+  }
+  .right{
+    float: right;
+  }
+  .list_model_number{
+    height: 100%;
+  }
+  .read_btn{
+    background: url("../../public/img/communion_circle/read_btn.png") no-repeat left center;
+    background-size: 15px 12px;
+  }
+  .message_btn{
+    background: url("../../public/img/communion_circle/message_btn.png") no-repeat left center;
+    background-size: 12px 12px;
+  }
+  .fabulous_btn{
+    background: url("../../public/img/communion_circle/fabulous_btn.png") no-repeat left center;
+    background-size: 11px 12px;
+  }
+  .list_model_number{
+    padding: 0;
+  }
+  .list_model_number p{
+    padding-left: 18px;
+    margin-left: 3px;
+  }
+  .list_model_number .read_btn{
+    margin-left: 0px;
+  }
+  img{
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+</style>

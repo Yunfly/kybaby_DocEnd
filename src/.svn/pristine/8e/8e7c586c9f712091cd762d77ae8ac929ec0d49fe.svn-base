@@ -1,0 +1,69 @@
+<template>
+  <div>
+    <div id="header" class="doctor_header">
+      <div class="header_Left" v-on:click="return_before()"><p></p></div>
+      <div class="header_center font18">更多待办</div>
+    </div>
+    <vue-event-calendar :events="demoEvents"></vue-event-calendar>
+  </div>
+
+</template>
+
+<script>
+  export default {
+    data () {
+      return {
+        demoEvents:[]
+      }
+    },
+    computed:{
+      dateNow: function () {
+        return new Date().format("yyyy-MM-dd")
+      }
+    },
+    mounted:function(){
+      this.getTodoList(this.demoEvents)
+    },
+    methods:{
+      getTodoList:function(str){
+        var that = this;
+        this.$ajax.post(todolist_host+'homePageWaitingProcess/homePageWaitingProcess.action','action=getHomePageWaitingProcessListByTime&getPageDate='+this.dateNow)
+          .then(function(result){
+            that.todolist = result.data;
+            for(var i = 0;i<result.data.otherHomePageWaitingProcessList.length;i++){
+              var orderTime = "";
+              var orderHours="";
+              var st = result.data.otherHomePageWaitingProcessList[i].orderTime.split('-');
+              orderTime = (st[0]+'/'+st[1]+'/'+st[2]).substring(0,10);
+              orderHours = (st[0]+'/'+st[1]+'/'+st[2]).substring(10,18);
+              str.push({
+                "date":orderTime,
+                "title":orderHours,
+                "desc":result.data.otherHomePageWaitingProcessList[i].orderType
+              });
+            }
+            for(var i = 0;i<result.data.todayHomePageWaitingProcessList.length;i++){
+              var orderTime = "";
+              var orderHours="";
+              var st = result.data.otherHomePageWaitingProcessList[i].orderTime.split('-');
+              orderTime = (st[0]+'/'+st[1]+'/'+st[2]).substring(0,10);
+              orderHours = (st[0]+'/'+st[1]+'/'+st[2]).substring(10,18);
+              str.push({
+                "date":orderTime,
+                "title":orderHours,
+                "desc":result.data.otherHomePageWaitingProcessList[i].orderType
+              });
+            }
+          }).then(function(){
+          var dateNow = new Date().format("yyyy/MM/dd").toString();
+          that.$EventCalendar.toDate(dateNow)
+        })
+
+      }
+    }
+  }
+</script>
+
+<style scoped>
+
+</style>

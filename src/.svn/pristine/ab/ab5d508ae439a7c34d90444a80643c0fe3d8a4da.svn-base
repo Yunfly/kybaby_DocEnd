@@ -1,0 +1,369 @@
+<template>
+    <div>
+        <div class="header_box gradient_bg">
+            <div id="header" class="doctor_header">
+                <div class="header_Left"><p @click="return_before()"></p></div>
+                <div class="header_center font18">医生圈</div>
+                <router-link v-bind:to="{path:'/service/doctor_circle/communion_circle/circle_post_my', query:{}}">
+                  <div class="header_right">
+                      <div class="news_logo">
+                          <div class="news_message"></div>
+                      </div>
+                  </div>
+                </router-link>
+            </div>
+            <div class="content_header flex_cont content_center">
+              <!--<transition-->
+                <!--name="list-animate"-->
+                <!--enter-active-class="animated bounceInRight"-->
+                <!--leave-active-class="animated bounceOutRight"-->
+              <!--&gt;-->
+                <!--<div class="content_logo font12" data-type="1" v-show="!isShow">热圈推荐</div>-->
+              <!--</transition>-->
+            </div>
+            <div class="content_tab_box flex_cont" data-type="0">
+                <p class="tab_menu flex_item text-center font14" v-for="item in circles" v-bind:dataType="item[0]" v-bind:dataName="item[2]" v-on:click="tabMenu(item[0])">{{item[1]}}</p>
+                <!--<p class="tab_menu flex_item text-center font14" v-bind:dataType='!isData' v-on:click="tabMenu(!isData)">交流圈</p>-->
+            </div>
+            <div class="tab_box flex_cont">
+              <transition
+                name="list-animate"
+                enter-active-class="animated bounceInLeft"
+              >
+                <div class="content_center tab_logo_box" v-show="isShow">
+                  <div class="tab_logo"></div>
+                </div>
+              </transition>
+              <transition
+                name="list-animate"
+                enter-active-class="animated bounceInRight"
+              >
+                <div class="content_center tab_logo_box tab_right" v-show="!isShow">
+                  <div class="tab_logo"></div>
+                </div>
+              </transition>
+            </div>
+        </div>
+        <div id="container" class="container_box">
+          <transition
+            name="list-animate1"
+            enter-active-class="animated bounceInLeft"
+          >
+            <!--我的圈-->
+            <div class="conten_box bgfff" data-type="0" v-show="isShow">
+              <div class="content_list_box bgfff" v-for="(item, index) in circles_list">
+                <router-link v-bind:to="{path:'/service/doctor_circle/communion_circle', query:{id:item[0],name:item[2],type:item[6]}}">
+                  <p class="gray_3" v-if="index != 0"></p>
+                  <div class="list_model_box flex_cont content_center">
+                    <div class="list_model_img">
+                      <img v-bind:src=imgUrl+item[1] width="100%" height="auto" class="img-responsive">
+                    </div>
+                    <div class="list_model_text flex_item">
+                      <p class="font14 text">{{item[2]}}</p>
+                      <p class="font12 paragraph">{{item[3]}}</p>
+                      <p class="font12 paragraph">发帖数：<span>{{item[4]}}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;参与人数：<span>{{item[5]}}</span></p>
+                    </div>
+                    <div class="list_model_btn follow_checkbox" v-on:click.stop="doThis">
+                      <input type="checkbox" class="follow_btn" v-bind:checked="(item[6] == 'Y' ? true : false)" v-on:click="followCircle(index, item[0])">
+                    </div>
+                  </div>
+                </router-link>
+                <p class="gray_3" v-if="circles_list.le"></p>
+              </div>
+
+              <div class="content_list_box hot_box bgf8" v-if="hot_leng > 0">
+                <p class="hot_model font14 paragraph">热门推荐</p>
+              </div>
+
+              <!--热门圈-->
+              <div class="content_list_box bgfff" v-for="(item, index) in circles_hot">
+                <router-link v-bind:to="{path:'/service/doctor_circle/communion_circle', query:{id:item[0],name:item[2],type:item[6]}}">
+                  <p class="gray_3" v-show="index != 0"></p>
+                  <div class="list_model_box flex_cont content_center">
+                    <div class="list_model_img">
+                      <img v-bind:src=imgUrl+item[1] width="100%" height="auto" class="img-responsive">
+                    </div>
+                    <div class="list_model_text flex_item">
+                      <p class="font14 text">{{item[2]}}</p>
+                      <p class="font12 paragraph">{{item[3]}}</p>
+                      <p class="font12 paragraph">发帖数：<span>{{item[4]}}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;参与人数：<span>{{item[5]}}</span></p>
+                    </div>
+                    <div class="list_model_btn follow_checkbox" v-on:click.stop="doThis">
+                      <input type="checkbox" class="follow_btn" v-bind:checked="(item[6] == 'Y' ? true : false)" v-on:click="followCircle((index + circles_list.length), item[0])">
+                    </div>
+                  </div>
+                </router-link>
+              </div>
+            </div>
+          </transition>
+          <transition
+            name="list-animate2"
+            enter-active-class="animated bounceInRight"
+          >
+            <!--交流圈-->
+            <div class="conten_box" data-type="1" v-show="!isShow">
+              <div class="content_list_box bgfff" v-for="(item, index) in circles_all">
+                <router-link v-bind:to="{path:'/service/doctor_circle/communion_circle', query:{id:item[0],name:item[2],type:item[6]}}">
+                  <p class="gray_3" v-if="index != 0"></p>
+                  <div class="list_model_box flex_cont content_center">
+                    <div class="list_model_img">
+                      <img v-bind:src=imgUrl+item[1] width="100%" height="auto" class="img-responsive">
+                    </div>
+                    <div class="list_model_text flex_item">
+                      <p class="font14 text">{{item[2]}}</p>
+                      <p class="font12 paragraph">{{item[3]}}</p>
+                      <p class="font12 paragraph">发帖数：<span>{{item[4]}}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;参与人数：<span>{{item[5]}}</span></p>
+                    </div>
+                    <div class="list_model_btn follow_checkbox" v-on:click.stop="doThis">
+                      <input type="checkbox" class="follow_btn" v-bind:checked="(item[6] == 'Y' ? true : false)" v-on:click="followCircle(index, item[0])">
+                    </div>
+                  </div>
+                </router-link>
+              </div>
+            </div>
+          </transition>
+        </div>
+    </div>
+</template>
+<script>
+  import $ from "jquery"
+  import ale from "../../ale"
+
+  export default {
+    data () {
+      return {
+        imgUrl : urlWay.fileserver,
+        isShow : true,
+        isData : true,
+        orders : '',
+        circles : '',
+        circles_list : '',
+        circles_hot : '',
+        circles_all : '',
+        circles_id : '',
+        hot_leng : ''
+      }
+    },
+    components : {
+
+    },
+    created : function () {
+      this.getCircleType();
+    },
+    mounted : function () {
+
+    },
+    methods : {
+      tabMenu : function (e) {
+        if(e == "1" && !this.isShow) {
+          this.isShow = !this.isShow;
+        }
+
+        if(e == "2" && this.isShow) {
+          this.isShow = !this.isShow;
+        }
+      },
+      getCircleType : function () {
+        var that = this;
+        this.$ajax.post(ringHost+'getDoctorRringInfo.action',"action=allCategory")
+          .then(function(result){
+            if(result.data.mes=="操作成功") {
+              that.circles = result.data.allRingCategory;
+              that.getCircleList(that.circles[0][0]);
+              that.getCircleList(that.circles[1][0]);
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      },
+      getCircleList : function (id) {
+        var that = this;
+
+        this.$ajax.post(ringHost+'getDoctorRringInfo.action',"action=someCategory&categoryId="+id)
+          .then(function(result){
+            if(result.data.mes=="操作成功") {
+              if(id == "1") {
+                that.circles_list = result.data.someRingCategory;
+                that.circles_hot = result.data.recommendRingCategory;
+                that.hot_leng = that.circles_hot.length;
+              } else if(id == "2") {
+                that.circles_all = result.data.someRingCategory;
+              }
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      },
+      doThis : function () {
+
+      },
+      followCircle : function (index, id) {
+        var state = $(".follow_btn").eq(index).prop("checked");
+
+        if(state) {
+          this.followYes(id);
+        } else {
+          this.followNo(id);
+        }
+      },
+      followYes : function (id) {
+        var that = this;
+        this.$ajax.post(ringHost+'doctorRringManage.action',"action=recommend&ringTypeId="+id)
+          .then(function(result){
+            if(result.data.mes=="操作成功") {
+              ale("订阅成功");
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      },
+      followNo : function (id) {
+        var that = this;
+        this.$ajax.post(ringHost+'doctorRringManage.action',"action=cancle&ringTypeId="+id)
+          .then(function(result){
+            if(result.data.mes=="操作成功") {
+              ale("取消成功");
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      }
+    }
+  }
+</script>
+<style scoped rel="stylesheet">
+  body{
+    background: #f8f8f8;
+  }
+  .gradient_bg{
+    background: -moz-linear-gradient(left top, #04ddcb, #23c9e7);
+    background: -webkit-linear-gradient(left top, #04ddcb, #23c9e7);
+    background: -o-linear-gradient(left top, #04ddcb, #23c9e7);
+    color:#fff;
+  }
+  .text{
+    color: #333333;
+  }
+  .paragraph{
+    color: #9a9a9a;
+  }
+  .header_box{
+    position: fixed;
+    left: 0;
+    top: 0px;
+    width: 100%;
+    z-index: 999;
+  }
+  .header_box #header{
+    background: none;
+  }
+  #header .header_right .news_logo{
+    position: absolute;
+    top: 50%;
+    right: 18px;
+    margin-top: -10px;
+    background: url("../../public/img/doctor_circle/news_logo.png") no-repeat left;
+    background-size: 20px;
+    width: 22px;
+    height: 20px;
+  }
+  .news_message{
+    position: absolute;
+    left: -4px;
+    top: -2px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: red;
+  }
+  .content_header{
+    margin-top: 45px;
+    width: 100%;
+    height: 50px;
+  }
+  .content_center{
+    display: -webkit-box;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+  }
+  .content_logo{
+    padding: 5px 30px;
+    border: 1px solid #ffffff;
+    border-radius: 30px;
+  }
+  .tab_menu{
+    padding: 5px 0;
+  }
+  .tab_box{
+    width: 100%;
+  }
+  .tab_logo_box{
+    width: 50%;
+  }
+  .tab_right{
+    margin-left: 50%;
+  }
+  .tab_logo{
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid #ffffff;
+    text-align: center;
+  }
+  #container{
+    width: 100%;
+    margin: 132px 0 0;
+  }
+  .content_list_box{
+    padding: 0px 18px;
+  }
+  .list_model_box{
+    padding: 15px 0;
+  }
+  .list_model_img{
+    width: 54px;
+    height: 54px;
+    margin: 0 10px 0 6px;
+  }
+  .list_model_img, .list_model_img img{
+    border-radius: 50%;
+  }
+  .list_model_text p{
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    line-height: 1.5;
+  }
+  .list_model_btn{
+    margin: 0 10px 0 24px;
+  }
+  .follow_checkbox input[type = checkbox]{
+
+    background: url("../../public/img/doctor_circle/follow_checkbox.png") no-repeat 0 0;
+    background-size:36px 18px;
+    height:18px;
+    width:18px;
+    border:none;
+    border-radius:0px;
+    outline:none;
+    -webkit-appearance: none;
+  }
+  .follow_checkbox input[type=checkbox]:checked{
+    background-position:-18px 0;
+  }
+  .hidden{
+    display: none;
+  }
+  .hot_box{
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+  .hot_model{
+    padding: 5px 0 5px 6px;
+  }
+</style>

@@ -1,0 +1,25 @@
+/**
+ * Created by Administrator on 2017/3/14.
+ */
+global.host = 'http://dev.qiyico.com/kybaby/main/';
+global.todolist_host = 'http://dev.qiyico.com/kybaby/';
+global.hostFile = 'http://dev.qiyico.com/kybabyDoctor/demo/main/';
+
+global.hostBG="http://dev.qiyico.com:8088/kybabyBG/admin/";
+//医生圈路径
+global.ringHost="http://dev.qiyico.com/kybaby/ring/";
+
+global.urlWay = {
+  "host":"http://dev.qiyico.com/",
+  "hostName":"http://dev.qiyico.com",
+  "kybaby":"http://dev.qiyico.com/kybaby/",
+  "orderHost":"http://dev.qiyico.com/kybaby/doctorOrder/",
+  "clinicHost":"http://dev.qiyico.com/kybaby/doctorClinic/",
+  "familyDoctorHost":"http://dev.qiyico.com/kybaby/familyDoctor/",
+  "orgBusinessHost":"http://dev.qiyico.com/kybaby/orgBusiness/",//机构
+  "fdmanage":"http://dev.qiyico.com/kybaby/fdmanage/",//用户
+  "fdmanageHost":"http://dev.qiyico.com/kybaby/fdmanage/",
+  "doctorDataGather":"http://dev.qiyico.com/kybaby/DoctorDataGather/",
+  "fileserver":"http://dev.qiyico.com:8088/fileserver",//图片路径
+  "orgHuaxi":"http://dev.qiyico.com/kybaby/hydNetWorkClinic/"
+}

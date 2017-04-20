@@ -1,0 +1,205 @@
+<template>
+  <div>
+    <div id="header" class="doctor_header">
+      <div class="header_Left" v-on:click="return_before()"><p></p></div>
+      <div class="header_center font18">修改密码</div>
+    </div>
+    <div id="container_full">
+      <form action="" id="changePassword" method="post">
+        <div class="phone_box">
+          <div class="register_list flex_cont flex_simple">
+            <div class="font12"><span>手机号 :</span></div>
+            <input type="text" name="regist_phone" id="phone" class="flex_simple" placeholder="请输入手机号">
+          </div>
+          <p class="gray_3"></p>
+          <div class="register_list flex_cont flex_simple">
+            <div class="font12">验证码 :</div>
+            <input type="text" class="flex_simple" id="code" placeholder="请输入验证码">
+            <button type="button" class="btn "  id="get_code" @click="httpPost()" >获取验证码</button>
+          </div>
+          <p class="gray_3"></p>
+          <div class="register_list flex_cont flex_simple">
+            <div class="font12">新密码 :</div>
+            <input type="text" name="regist_phone" id="new_password" class="flex_simple" placeholder="请输入新密码">
+          </div>
+          <p class="gray_3"></p>
+          <div class="register_list flex_cont flex_simple">
+            <div class="font12">确认新密码 :</div>
+            <input type="text" name="regist_phone" id="confirm_password" class="flex_simple" placeholder="请确认新密码">
+          </div>
+        </div>
+
+        <div class="register_btn">
+          <button type="submit" id="cbUserAgreement" @click="modify()" class="btn btn_block font16">确定</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</template>
+
+<script>
+  import $ from 'jquery'
+  import ale from '../../ale'
+  export default{
+    data(){
+      return{
+        randomNum:''
+      }
+    },
+    mounted:function () {
+      var randomNum=''
+    },
+    methods:{
+      modify:function (){
+        var that = this;
+        var password = $("#new_password").val();
+        if($("#phone").val()==""||$("#phone").val()==null){
+          ale("请输入手机号");
+        }
+        else if($("#code").val()==""||$("#code").val()==null){
+          ale("请输入验证码");
+        }
+        else if(password==""||password==null){
+          ale("请输入密码");
+        }
+        else if($("#confirm_password").val()==""||$("#confirm_password").val()==null){
+          ale("请确认密码");
+        }
+        else if(password!=$("#confirm_password").val()){
+          ale("两次密码不一致");
+        }
+        else if($("#code").val()!=randomNum){
+          ale("验证码错误");
+        }
+        else{
+          $.ajax({
+            type : 'post',
+            async: false ,
+            url : host+'modifyPassword.action',
+            data : {action:"modifyPassword",password:password},
+            success : function(result) {
+              that.$router.push("/login");
+            }
+          });
+        }
+      },
+      numReduce:function (){
+        var that = this;
+        //发送验证码
+        var ttt=60;
+        (function num(){
+          ttt--;
+          if(ttt <= 0){
+            ttt = 60;
+            $('#get_code').attr('onclick','httpPost()').text('获取验证码').css('backgroundColor','#50c1e9');
+          }else{
+            $('#get_code').removeAttr('onclick').css('backgroundColor','#dadada');
+            $('#get_code').text("("+ttt+"s)");
+            setTimeout(num, 1000);
+          }
+        })()
+
+      },
+      httpPost:function (){
+        var that = this
+        var mobile = $("#phone").val();
+        if(mobile==null||mobile==""){
+          alert("请输入手机号");
+        }
+        else{
+          $.ajax({
+            type : 'post',
+            async: false ,
+            url : host+'httpPost.action',
+            data : {action:"change",mobile:mobile},
+            success : function(result) {
+              if(result.mes=="未注册"){
+                alert("手机号不存在");
+              }else if(result.mes=="请输入您的手机号"){
+                ale("您输入的手机号有误！");
+              }else{
+                that.randomNum = result.randomNum;
+                //ale(result.randomNu m);
+                that.numReduce();
+              }
+            }
+          });
+        }
+      },
+      hide_doctor_xieyi:function (){
+        $('#doctor_xieyi_box').empty().hide();
+        $('#doctor_xieyi_tit').hide();
+      },
+    }
+  }
+</script>
+
+<style scoped>
+  /*.register_list .font12{  flex: 0 0 32%  }*/
+  .register_list .btn{position: absolute; right: 10px }
+  .register_list input { padding-left: 10px;}
+  /*.gray_3{*/
+    /*width:90% !important;*/
+    /*margin:0 auto;}*/
+  /*html,body{*/
+    /*overflow-x: hidden;*/
+  /*}*/
+  body{
+    background: url("../../public/img/register/bg.png") no-repeat;
+    background-size: 100%;
+
+  }
+  .phone_box{
+    padding: 0 18px;
+    background: #fff;
+  }
+  .register_list{
+    position: relative;
+    height: 48px;
+    padding:0 6px;
+  }
+
+  .register_list .btn{
+    height:40px;
+    color: #fff;
+  }
+  .register_list input{
+    font-size: 1.4rem;
+    color: #333;
+    background: none;
+    border:none;
+
+  }
+  .flex_between{
+    justify-content: space-between;
+  }
+  .flex_between input{
+    width:60%;
+  }
+  .tologin{
+    color: #fff;
+    float: right;
+    font-size: 1.2rem;
+    margin-right:5%;
+  }
+
+  label{
+    background:none;
+    color:#fff;
+    font-size:1.2rem;
+    position: relative;
+    vertical-align: 4px;
+    margin-left: 5px;
+  }
+  .register_btn{
+    padding:40px 40px 20px 40px;
+  }
+  .register_btn button{
+    margin-top:8px;
+  }
+  .forget{
+    float: left;
+    margin-left: 5%;
+    color: #fff;
+  }
+</style>

@@ -1,0 +1,201 @@
+<template>
+  <div>
+    <div id="header" class="doctor_header">
+        <div class="header_Left"><p @click="return_before()"></p></div>
+        <div class="header_center font18">帖子评论</div>
+        <div class="header_right"></div>
+    </div>
+
+    <div id="container" class="container_box bgfff">
+        <div class="post_text_model" v-for="(item, $index) in post_list">
+            <div class="post_text_line hidden">
+                <p class="gray_3"></p>
+            </div>
+            <div class="post_text_header flex_cont bgfff">
+                <div class="post_text_img">
+                    <img v-bind:src=imgUrl+item[4] class="img-responsive">
+                </div>
+                <div class="post_text_mess flex_item content_center">
+                    <div class="post_text_mess_box">
+                        <p class="font12 text post_user_name">{{item[1]}} 【{{$index + 1}}楼】</p>
+                    </div>
+                </div>
+            </div>
+            <div class="post_text_header flex_cont bgfff">
+                <p class="post_text_ml"></p>
+                <div class="post_text_mess flex_item">
+                    <p class="font10 text post_user_comment">
+                        {{item[2]}}
+                    </p>
+                    <div class="flex_cont post_user_box">
+                        <p class="flex_item font10 paragraph post_user_time">{{item[3]}}</p>
+                        <p class="fabulous_btn_gary"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="footer_box" class="bgfff">
+        <div class="footer_box flex_cont content_center">
+            <p class="delete_btn" id="delete_btn" v-on:click="clearText()"></p>
+            <div class="flex_item font12 text send_text_box">
+                <p class="send_text" id="send_text" contenteditable="true" v-model="post_comment"></p>
+            </div>
+            <p class="send_btn title font12" id="send_btn" v-on:click="submit_comment(post_id)">发送</p>
+        </div>
+    </div>
+  </div>
+</template>
+<script>
+  import $ from 'jquery'
+
+  export default {
+    data() {
+      return {
+        imgUrl : urlWay.fileserver,
+        post_list : [],
+        post_id : '',
+        post_comment : ''
+      }
+    },
+    components : {
+
+    },
+    created : function () {
+      this.post_id = this.$route.query.id;
+      this.getPostDetail(this.post_id);
+    },
+    mounted () {
+
+    },
+    methods : {
+      getPostDetail : function (id) {
+      var that = this;
+
+      this.$ajax.post(ringHost+'getDoctorRringInfo.action',"action=detail&postInfoId="+id)
+        .then(function(result){
+          if(result.data.mes=="操作成功") {
+            that.post_list = result.data.somePostInfoReply;
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      },
+      submit_comment : function (id) {
+        var that = this;
+        var text = $("#send_text").text();
+
+        if(text != "") {
+          that.clearText();
+
+          this.$ajax.post(ringHost+'doctorRringManage.action',"action=postReply&postInfoId="+id+"&postContent="+text)
+            .then(function(result){
+              if(result.data.mes=="操作成功") {
+                that.getPostDetail(that.post_id);
+              }
+
+              if(result.data.mes=="无权限") {
+
+              }
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+        } else {
+          alert("评论内容不能为空");
+        }
+      },
+      clearText : function () {
+        $("#send_text").text("");
+      }
+    }
+  }
+
+</script>
+<style scoped>
+  #container.container_box{
+    margin: 45px 0 50px;
+  }
+  .post_text_model{
+    width: 100%;
+  }
+  .post_text_header{
+    padding: 10px 28px 0;
+  }
+  .post_text_line{
+    padding: 0 18px;
+  }
+  .post_text_img{
+    width: 54px;
+    height: 54px;
+    margin: 0 10px 0 0;
+  }
+  .post_text_img, .post_text_img img{
+    border-radius: 50%;
+  }
+  .post_text_ml{
+    width: 54px;
+    margin: 0 10px 0 0;
+  }
+  .post_text_mess_box{
+    width: 100%;
+  }
+  .content_center{
+    display: -webkit-box;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+  }
+  .post_user_box{
+    padding: 10px 0;
+  }
+  .fabulous_btn_gary{
+    background: url("../../public/img/circle_text/fabulous_btn_gary.png") no-repeat left center;
+    background-size: 15px 16px;
+    width: 15px;
+    height: 16px;
+  }
+  .fabulous_btn_light{
+    background: url("../../public/img/circle_text/fabulous_btn_light.png") no-repeat left center;
+    background-size: 15px 16px;
+  }
+  #footer_box{
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    /*height: 50px;*/
+    box-shadow: 0px 0px 6px 1px rgba(225,225,225,0.3);
+  }
+  .footer_box{
+    padding: 20px 10px;
+  }
+  .delete_btn{
+    background: url("../../public/img/circle_text/delete_text_btn.png") no-repeat center;
+    background-size: 20px 20px;
+    width: 20px;
+    height: 20px;
+  }
+  .send_text_box{
+    margin: 0 10px;
+    border-bottom: 1px solid #eeeeee;
+    line-height: 1.5;
+    padding: 5px;
+  }
+  .send_text{
+    width: 100%;
+    height: 100%;
+    outline: none;
+    max-height: 64px;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  .send_text:focus{
+    outline: none;
+  }
+  .send_btn{
+    padding: 5px 10px;
+    background: #13b8d4;
+    border-radius: 6px;
+  }
+</style>

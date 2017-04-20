@@ -1,0 +1,89 @@
+html,body{
+    overflow-x: hidden;
+}
+body{
+    background: url("../../img/register/bg.png") no-repeat;
+    background-size: 100%;
+
+}
+.welcome{
+    color: #fff;
+    font-size: 1.7rem;
+    margin-top:5.1%;
+}
+.logo{
+    width: 64px;
+    margin: 0 auto;
+    margin-top: 8%;
+}
+.register_box{
+    margin:8% 18px 10px 18px;
+    background-color: rgba(225,225,225,0.78);
+    border-radius: 4px;
+    margin-top: 8%;
+}
+.register_list{
+    position: relative;
+    height: 48px;
+    padding:0 18px;
+}
+
+.register_list .btn{
+    height:40px;
+    margin-top:4px;
+    color: #fff;
+}
+.register_list input{
+    font-size: 1.4rem;
+    color: #333;
+    background: none;
+    border:none;
+
+}
+.flex_between{
+    justify-content: space-between;
+}
+.flex_between input{
+    width:60%;
+}
+.tologin{
+    color: #fff;
+    float: right;
+    font-size: 1.2rem;
+    margin-right:5%;
+}
+
+label{
+    background:none;
+    color:#fff;
+    font-size:1.2rem;
+    position: relative;
+    vertical-align: 4px;
+    margin-left: 5px;
+}
+.register_btn{
+    padding:40px 40px 20px 40px;
+}
+input[type = checkbox]{
+    -moz-appearance: none;
+    appearance: none;
+    background:url(../../img/check_black.png)  no-repeat;
+    background-size:36px 18px;
+    height:18px;width:18px;
+    background-position:0 0;
+    border:none;
+    border-radius:0px;
+    outline:none;
+    -webkit-appearance: none;
+}
+input[type=checkbox]:checked{
+    background-position:-18px 0;
+}
+.register_btn button{
+    margin-top:8px;
+}
+.forget{
+    float: left;
+    margin-left: 5%;
+    color: #fff;
+}

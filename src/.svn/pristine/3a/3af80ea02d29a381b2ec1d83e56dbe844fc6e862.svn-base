@@ -1,0 +1,635 @@
+<template>
+  <div>
+    <div id="header" class="doctor_header">
+      <div class="header_Left"></div>
+      <div class="header_center font18">签约用户</div>
+      <div class="header_right">
+        <router-link to="/contracted_user"><div class="list_show"></div></router-link>
+      </div>
+    </div>
+    <div class="search_box bgf8">
+      <div class="search_box_btn flex_cont bgfff">
+        <input class="flex_item font10 text" type="text" placeholder="请输入宝贝的名字" v-model="search_value">
+        <p class="search_btn" v-on:click="search_user()"></p>
+      </div>
+    </div>
+    <div id="container" class="container_box">
+      <div class="list_model_box bgfff" v-for="(list, index) in user_list">
+        <div class="list_model_header flex_cont" data-type="off" v-on:click="listShow(index)">
+          <p class="direc_btn direc_left_btn"></p>
+          <p class="flex_item font12 text" v-bind:dataType="list.id">{{list.groupName}} （<span class="">{{user_num[index].user_leng}}</span>）</p>
+          <p class="more_btn" v-on:click.stop="doThis(index)"></p>
+          <div class="list_model_operations" v-show="index == group_index" v-on:click.stop="doThis(index)">
+            <div class="tab_logo_box content_center">
+              <div class="tab_logo"></div>
+            </div>
+            <ul class="list_models list_bg">
+              <li class="font12 title" v-on:click="addLayer('')">添加分组</li>
+              <p class="list_models_line" v-if="index != 0"></p>
+              <li class="font12 title" v-if="index != 0" v-on:click="renameLayer(list.id)">重命名</li>
+              <p class="list_models_line" v-if="index != 0"></p>
+              <li class="font12 title" v-if="index != 0" v-on:click="deleteLayer(list.id)">删除分组</li>
+            </ul>
+          </div>
+        </div>
+        <div class="list_model_group">
+            <p class="gray_3"></p>
+            <div class="list_model_cont_box" v-for="(item, eq) in list.signUserDTOList" v-if="item.fdServicePackages[0]!=undefined">
+              <p class="gray_line"></p>
+              <div class="list_model_item" data-type="off" v-on:click="userMenuShow(index, eq, item.userId)">
+                <div class="list_model list_model_cont flex_cont font10 paragraph">
+                  <p class="user_name text font12">{{item.babyName}}</p>
+                  <p class="user_sex user_woman user_ml10" v-bind:class="{user_man : item.sex == '男'}"></p>
+                  <p class="user_grade user_ml10">{{item.moonSage}}</p>
+                  <p class="user_phone user_ml10">{{item.phone}}</p>
+                </div>
+                <div class="list_model list_model_package flex_cont font10 paragraph" v-for="icon in item.fdServicePackages">
+                  <p class="user_package">{{icon.packageName}}</p>
+                  <p class="user_term">
+                    有效期：<span class="term_start">{{icon.termOfValidityStart.substring(0, 10)}}</span> 至 <span>{{icon.termOfValidityEnd.substring(0, 10)}}</span>
+                  </p>
+                </div>
+              </div>
+              <div class="list_model_operation">
+                <div class="list_models list_model_btn flex_cont font12 title">
+                  <p class="flex_item model_btn_left" v-if="item.fdServicePackages[0]!=undefined"  @click="chooseBusiness('message',item.userId,item.fdServicePackages[0].id)">
+                    私信
+                  </p>
+                  <p class="white_line bgfff"></p>
+                  <p class="flex_item">
+                    <router-link v-bind:to="{path:'/contracted_user/contracted_user_all/health_record', query:{id:item.userId}}" class="title">健康记录</router-link>
+                  </p>
+                  <p class="white_line bgfff"></p>
+                  <p class="flex_item model_btn_right" v-on:click="groupLayer(list.id)">移动分组</p>
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+    <side-footer></side-footer>
+  </div>
+</template>
+<script>
+  import $ from 'jquery'
+  import SideFooter from '../../component/footer.vue'
+  require("../../public/css/layer.css")
+  import ale from '../../ale'
+
+  export default {
+    data() {
+      return {
+        user_list : '',
+        user_item : -1,
+        user_index : -1,
+        group_index : -1,
+        user_id : '',
+        group_id : '',
+        group_name : '',
+        search_value : '',
+        user_num : []
+      }
+    },
+    components:{
+      SideFooter
+    },
+    created : function () {
+      this.getUserList();
+    },
+    mounted : function () {
+
+    },
+    methods : {
+      listShow : function (index) {
+        $(".direc_btn").eq(index).toggleClass("direc_active");
+        $(".list_model_group").eq(index).slideToggle(300);
+        this.group_index = -1;
+      },
+      userMenuShow : function (index, item, id) {
+        $(".list_model_operation").slideUp(300);
+
+        if(this.user_index == index && this.user_item == item) {
+          this.user_index = -1;
+          this.user_item = -1;
+        } else {
+          $(".list_model_box").eq(index).find(".list_model_operation").eq(item).slideDown(300);
+          this.user_index = index;
+          this.user_item = item;
+
+          this.user_id = id;
+        }
+
+        this.group_index = -1;
+      },
+      groupMenuShow : function (index) {
+        this.group_index = (this.group_index == index ? -1 : index);
+      },
+      getUserList : function () {
+        var that = this;
+        var user_package = null;
+
+        this.$ajax.post(urlWay.fdmanageHost+'fdUserManage.action',"action=getGroupSignUserList")
+          .then(function(result){
+            if(result.data.mes == "成功") {
+              that.reset();
+
+              that.user_list = result.data.groupSignUserList;
+              that.user_num = [];
+
+              for(var i = 0; i < that.user_list.length; i++) {
+                var user_len = 0;
+                user_package = that.user_list[i].signUserDTOList;
+
+                for(var j = 0; j < user_package.length; j++) {
+                  if(user_package[j].fdServicePackages.length > 0) {
+                    user_len++;
+                  }
+                }
+
+                that.user_num.push({
+                  "user_leng" : user_len
+                });
+              }
+            }
+          }).
+          then(function () {
+            $(".list_model_header").each(function () {
+              $(this).next(".list_model_group").find(".gray_line").eq(0).hide();
+            });
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      },
+      search_user : function () {
+        var that = this;
+        var value = this.search_value;
+
+        this.$ajax.post(urlWay.fdmanageHost+'fdUserManage.action',"action=getGroupSignUserList&userInfo.babyName="+ value)
+          .then(function(result){
+            if(result.data.mes == "成功") {
+              that.reset();
+              that.user_list = result.data.groupSignUserList;
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      },
+      doThis : function (index) {
+        this.groupMenuShow(index);
+      },
+      groupLayer : function (group_id) {
+        this.layer(1, this.user_list, this.user_id);
+        this.group_id = group_id;
+      },
+      moveGroup : function (user_id, group_id) {
+        var that = this;
+        this.$ajax.post(urlWay.fdmanageHost+'fdUserManage.action',"action=addGroupSignUserOrMoveSignUser&userInfo.id="+ user_id +"&fdSignUserGroupInfo.id="+ group_id)
+          .then(function(result){
+            if(result.data.mes == "操作成功") {
+              that.closeLayer();
+              that.getUserList();
+              ale("移动成功");
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      },
+      renameLayer : function (group_id) {
+        this.layer(4, '', group_id);
+      },
+      renameGroup : function (group_id, group_name) {
+        var that = this;
+        this.$ajax.post(urlWay.fdmanageHost+'fdUserManage.action',"action=updateGroupName&fdSignUserGroupInfo.id="+ group_id +"&fdSignUserGroupInfo.groupName="+ group_name)
+          .then(function(result){
+            if(result.data.mes == "操作成功") {
+              that.closeLayer();
+              that.getUserList();
+              ale("重命名成功");
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      },
+      deleteLayer : function (group_id) {
+        this.layer(2, '', group_id);
+      },
+      deleteGroup : function (group_id) {
+        var that = this;
+        this.$ajax.post(urlWay.fdmanageHost+'fdUserManage.action',"action=deleteGroupAndMoveSignUser&fdSignUserGroupInfo.id="+ group_id)
+          .then(function(result){
+            if(result.data.mes == "操作成功") {
+              that.closeLayer();
+              that.getUserList();
+              ale("删除成功");
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      },
+      addLayer : function (group_id) {
+        this.layer(3, '', group_id);
+      },
+      addGroup : function (user_id, group_name) {
+        var that = this;
+        this.$ajax.post(urlWay.fdmanageHost+'fdUserManage.action',"action=addGroupSignUserOrMoveSignUser&"+ (user_id == '' ? '&' : 'userInfo.id='+ user_id +'&') +"fdSignUserGroupInfo.groupName="+ group_name)
+          .then(function(result){
+            if(result.data.mes == "操作成功") {
+              that.closeLayer();
+              that.getUserList();
+              ale("添加成功");
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      },
+      layer : function (name, lists, id){
+        //分组-->
+        var layer_group = '\
+          <div class="layer_box_layout layer_box_logo">\
+            <p class="group_logo"></p>\
+          </div>\
+          <div class="layer_box_layout flex_cont bgfff content_center layer_cont_box">\
+            <p class="flex_item font12 text" id="new_group">添加到新分组</p>\
+            <p class="font12 text layer_right_btn"></p>\
+          </div>\
+          <div class="layer_group_box bgf8">\
+            <ul>\
+            \
+            </ul>\
+          </div>\
+        ';
+
+        //删除-->
+        var layer_delete = '\
+          <div class="layer_box_layout layer_box_logo">\
+            <p class="delete_logo"></p>\
+          </div>\
+          <div class="layer_box_layout flex_cont layer_cont_box layer_cont_msg">\
+            <p class="flex_item font12 text content_center">确认是否删除该分组</p>\
+          </div>\
+        ';
+
+        //添加-->
+        var layer_add = '\
+          <div class="layer_box_layout layer_box_logo">\
+            <p class="add_logo"></p>\
+          </div>\
+          <div class="layer_box_layout flex_cont layer_cont_msg">\
+            <input class="flex_item font12 text layer_cont_box" id="group_name" type="text" placeholder="请输入您的分组名称" maxlength="10">\
+          </div>\
+        ';
+
+        //重命名-->
+        var layer_rename = '\
+          <div class="layer_box_layout layer_box_logo">\
+            <p class="rename_logo"></p>\
+          </div>\
+          <div class="layer_box_layout flex_cont layer_cont_msg">\
+            <input class="flex_item font12 text layer_cont_box" id="group_rename" type="text" placeholder="请输入您的新分组名称" maxlength="10">\
+          </div>\
+        ';
+
+        var layer_html = null,
+          layer_id = null,
+          that = this;
+
+        switch (name) {
+          case 1 :
+            layer_html = layer_group;
+            layer_id = "layer_group";
+            break;
+          case 2 :
+            layer_html = layer_delete;
+            layer_id = "layer_delete";
+            break;
+          case 3 :
+            layer_html = layer_add;
+            layer_id = "layer_add";
+            break;
+          case 4 :
+            layer_html = layer_rename;
+            layer_id = "layer_rename";
+            break;
+        }
+
+        $("body").append('<div class="layer_box" id="layer_box">\
+          <div class="layer_bg_box" id="layer_bg_box"></div>\
+          <div class="layer_container_box bgf8" id="'+ layer_id +'">\
+            '+layer_html+'\
+            <div class="layer_btn_box flex_cont font12">\
+              <p class="flex_item layer_btn layer_btn_no content_center" id="layer_btn_no">取消</p>\
+              <p class="flex_item layer_btn layer_btn_yes content_center" id="layer_btn_yes">确定</p>\
+            </div>\
+          <div>\
+        </div>');
+
+        if(lists && lists.length > 0) {
+          for(var i = 0; i < lists.length; i++) {
+            $(".layer_group_box ul").append('<li class="layer_box_layout">\
+              <p class="layer_line"></p>\
+              <div class="flex_cont layer_cont_box content_center layer_radio_box">\
+                <p class="flex_item font12 text">'+ lists[i].groupName +'</p>\
+                <input type="radio" name="group" class="layer_radio" data-type="'+ lists[i].id +'">\
+              </div>\
+            </li>');
+          }
+
+          $(".layer_line").eq(0).hide();
+          $(".layer_radio").eq(0).attr("checked", "checked");
+        }
+
+        $("#layer_box").fadeIn(300);
+        $("#group_name").focus();
+        $("#group_rename").focus();
+
+        $(".layer_radio_box").click(function () {
+          $(".layer_radio").removeAttr("checked");
+          $(this).children(".layer_radio").prop("checked", "checked");
+        });
+
+        //关闭layer-->
+        $("#layer_bg_box, #layer_btn_no").click(function () {
+            that.closeLayer();
+        });
+
+        //添加新分组
+        $("#new_group").click(function () {
+          that.closeLayer();
+
+          setTimeout(function () {
+            that.addLayer(that.user_id);
+          }, 300);
+        });
+
+        //确定
+        $("#layer_btn_yes").click(function () {
+          var value = null;
+
+          switch (name) {
+            case 1 :
+              $(".layer_radio").each(function () {
+                if($(this).prop("checked")) {
+                  value = $(this).attr("data-type");
+                }
+              });
+
+              that.moveGroup(id, value);
+              break;
+            case 2 :
+              that.deleteGroup(id);
+              break;
+            case 3 :
+              value = $.trim($("#group_name").val());
+
+              if(value != '') {
+                that.addGroup(id, value);
+              } else {
+                ale("分组名称不能为空");
+                $("#group_name").focus();
+              }
+              break;
+            case 4 :
+              value = $.trim($("#group_rename").val());
+
+              if(value != '') {
+                that.renameGroup(id, value);
+              } else {
+                ale("新分组名称不能为空");
+                $("#group_rename").focus();
+              }
+              break;
+          }
+
+
+        });
+      },
+      closeLayer : function () {
+        $("#layer_box").fadeOut(300);
+
+        setTimeout(function () {
+          $("body").find("#layer_box").remove();
+        }, 300);
+      },
+      reset : function () {
+        this.closeLayer();
+        this.user_index = -1;
+        this.user_item = -1;
+        $(".direc_btn").removeClass("direc_active");
+        $(".list_model_group").slideUp(300);
+        this.group_index = -1;
+        this.user_id = '';
+        this.user_id = '';
+        $(".list_model_operation").slideUp(300);
+      },
+  chooseBusiness:function(type,id,packageID) {
+    var that = this;
+    if (type!=undefined ) {
+      var useId = id;
+      this.$ajax.post(urlWay.fdmanage + 'fdUserManage.action', 'action=getConsultListAtDoctor&userInfo.id=' + useId)
+        .then(function (result) {
+          var res = result.data.consult;
+          if (result.data.mes == '请登录') {
+            ale('请登录');
+            setTimeout(function () {
+              that.$router.push('/login')
+            }, 2500);
+          }else if (result.data.mes == "成功") {
+            that.$router.push({path:'/consulting/consulting_detail', query:{id:res.logId,packageId:res.fdServicePackage.id,isTag:'false',userId:useId,userType:1}});
+          }else if(result.data.mes=='会话结束'){
+            that.$router.push({path:'/consulting/beforeConsultation',query:{userId:useId,packageId:packageID}})
+          }
+        })
+    } else{
+
+    }
+  }
+    }
+  }
+</script>
+<style scoped>
+  .list_show{
+    background: url("../../public/img/contracted_user/list_menu_btn.png") no-repeat right 18px center;
+    background-size: 20px;
+    height: 45px;
+  }
+  .content_center{
+    display: -webkit-box;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+  }
+  .search_box{
+    position: fixed;
+    left: 0;
+    top: 45px;
+    width: 100%;
+    padding: 10px 0;
+    z-index: 999;
+  }
+  .search_box_btn{
+    margin: 0 20px;
+    padding: 5px 5px 5px 15px;
+    border-radius: 36px;
+  }
+  .search_box_btn input{
+    border: none;
+    outline: none;
+    background: none;
+  }
+  .search_btn{
+    background: url("../../public/img/contracted_user/search_btn.png") no-repeat center;
+    background-size: 20px;
+    width: 27px;
+    height: 27px;
+  }
+  #container.container_box{
+    margin: 102px 0 50px;
+  }
+  .list_model_box{
+    position: relative;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .list_model_group{
+    width: 100%;
+    display: none;
+  }
+  .list_model_header{
+    margin: 0 20px;
+    height: 54px;
+    line-height: 54px;
+  }
+  .direc_btn{
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000px;
+    perspective: 1000px;
+    -webkit-transition: .5s;
+    transition: .5s;
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  .direc_left_btn{
+    background: url("../../public/img/contracted_user/direc_left_btn.png") no-repeat center;
+    background-size: 9px 14px;
+    width: 9px;
+    height: 100%;
+    margin-right: 10px;
+  }
+  .direc_active{
+    -webkit-transform: rotate(90deg);
+    transform: rotate(90deg);
+    background: url("../../public/img/contracted_user/direc_down_btn.png") no-repeat center;
+    background-size: 9px 14px;
+  }
+  .more_btn{
+    background: url("../../public/img/contracted_user/more_btn.png") no-repeat center;
+    background-size: 5px 20px;
+    width: 5px;
+    height: 100%;
+  }
+  .list_model_cont_box, .list_model_item{
+    width: 100%;
+  }
+  .list_model{
+    margin: 0 20px;
+    padding: 15px 0;
+  }
+  .list_model_operation{
+    margin: 0 20px;
+    display: none;
+  }
+  .list_model_package{
+    padding: 0 0 10px;
+  }
+  .list_model_cont p, .list_model_package p{
+    line-height: 1.5;
+  }
+  .user_sex{
+    width: 10px;
+    height: 14px;
+    margin-top: 2px;
+  }
+  .user_woman{
+    background: url("../../public/img/contracted_user/woman.png") no-repeat center;
+    background-size: 10px 14px;
+  }
+  .user_man{
+    background: url("../../public/img/contracted_user/man.png") no-repeat center;
+    background-size: 10px 14px;
+  }
+  .user_ml10{
+    margin-left: 10px;
+  }
+  .user_package{
+    width: 40%;
+  }
+  .list_model_btn{
+    padding-bottom: 10px;
+  }
+  .list_model_btn p{
+    background: #13b9d7;
+    height: 29px;
+    line-height: 29px;
+    text-align: center;
+  }
+  .list_model_btn .white_line{
+    width: 1px;
+    height: 100%;
+  }
+  .gray_line{
+    background: #eeeeee;
+    height: 1px;
+    margin: 0 20px;
+  }
+  .model_btn_left{
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+  }
+  .model_btn_right{
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+  }
+  .list_model_operations{
+    position: absolute;
+    right: 45px;
+    top: 46px;
+    width: 90px;
+    z-index: 99;
+  }
+  .list_models{
+    width: 100%;
+  }
+  .list_bg{
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 4px;
+  }
+  .list_models li{
+    width: 100%;
+    height: 34px;
+    text-align: center;
+    line-height: 34px;
+  }
+  .list_models_line{
+    width: 100%;
+    height: 1px;
+    background: rgba(238, 238, 238, 0.4);
+  }
+  .tab_logo_box{
+    width: 100%;
+  }
+  .tab_logo{
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid rgba(0, 0, 0, 0.8);
+    text-align: center;
+    z-index: 999;
+  }
+</style>

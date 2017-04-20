@@ -1,0 +1,60 @@
+.door_open_list{
+    padding: 0 18px;
+    border-bottom: 8px solid #f4f4f4;
+    background: #fff;
+    position: relative;
+    overflow: hidden;
+}
+.switch {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background: #EDEDED;
+    border-radius: 50px;
+    transition: .3s;
+}
+.switch>span {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    background: url('../../img/round_gray.png')no-repeat center;
+    background-size: 22px;
+    position: absolute;
+    top: 2px;
+    left: 0;
+    transition: .3s;
+}
+.server_info {
+    padding: 15px 8px;
+    border-bottom: 1px solid #e8e8e8;
+}
+.server_time {
+    padding: 10px 8px;
+    font-size: 1.4rem;
+    text-align: left;
+    color: #858585;
+}
+.server_time>p{
+    padding-left: 8px;
+    margin-top:1px;
+}
+.server_time span{
+    display: inline-block;
+    font-size: 1.4rem;
+    margin-left: 10px;
+    line-height: 21px;
+}
+.server_content {
+    line-height: 30px;
+}
+.server_content, .left_distance {
+    margin-left: 10px;
+}
+.switch.open {
+    background: #0eced4;
+}
+.switch.open>span {
+    left: 21px;
+    background: url('../../img/round_gray.png')no-repeat center;
+    background-size: 22px;
+}

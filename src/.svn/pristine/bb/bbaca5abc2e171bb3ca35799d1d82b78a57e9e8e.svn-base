@@ -1,0 +1,28 @@
+.promptItem ol{list-style-type:none;counter-reset:sectioncounter;
+    -webkit-user-select:none;
+    user-select:none;
+    padding:0 18px 10px 18px;}
+.promptItem ol li:before {
+    content:counter(sectioncounter) "、";
+    counter-increment:sectioncounter;
+}
+.promptItem{
+    -webkit-overflow-scrolling: touch;
+}
+.promptItem ol li{
+    height: 48px;
+    line-height: 48px;
+    border-bottom: 1px solid #eee;
+    width:100%;
+}
+#quick_btn{
+    position: fixed;
+    bottom:0;
+    width:100%;
+    background-color: #fff;
+    height:44px;
+}
+#quick_btn div{
+    width:85%;
+    margin:0 auto;
+}

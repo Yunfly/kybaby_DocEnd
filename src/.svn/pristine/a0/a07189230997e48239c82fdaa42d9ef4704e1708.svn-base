@@ -1,0 +1,446 @@
+/**
+ * Created by Administrator on 2017/3/11.
+ */
+import Vue from 'vue'
+import Router from 'vue-router'
+
+
+Vue.use(Router);
+export default new Router({
+  linkActiveClass:"is-active",
+  base: __dirname,
+  saveScrollPosition:true,
+  routes: [
+    {
+      path: '/login',
+      component:resolve =>{
+        require(['../views/common/login'],resolve)
+      }
+    },{
+      path: '/register',
+      component:resolve =>{
+        require(['../views/common/register'],resolve)
+      }
+    },
+    {
+      path:'/index',
+      component:resolve =>{
+        require(['../views/index'],resolve)
+      }
+    },
+    {
+      path:'/outpatient_order',
+      component:resolve =>{
+        require(['../views/home/outpatient_order'],resolve)
+      }
+    },
+    {
+      path: '/service',
+      component:resolve =>{
+        require(['../views/service'],resolve)
+      }
+    },
+    {
+      path: '/contracted_user',
+      component:resolve =>{
+        require(['../views/contracted_user/contracted_user'],resolve)
+      }
+    },
+    {
+      path: '/contracted_user/contracted_user_list',
+      component:resolve =>{
+        require(['../views/contracted_user/contracted_user_list'],resolve)
+      }
+    },
+    {
+      path: '/contracted_user/contracted_user_all',
+      component:resolve =>{
+        require(['../views/contracted_user/contracted_user_all'],resolve)
+      }
+    },
+    {
+      path: '/contracted_user/contracted_user_all/health_record',
+      component:resolve =>{
+        require(['../views/contracted_user/health_record'],resolve)
+      }
+    },
+    {
+      path: '/contracted_user/contracted_user_all/health_record/basic_information',
+      component:resolve =>{
+        require(['../views/contracted_user/basic_information'],resolve)
+      }
+    },
+    {
+      path: '/contracted_user/contracted_user_all/health_record/count_record',
+      component:resolve =>{
+        require(['../views/contracted_user/count_record'],resolve)
+      }
+    },
+    {
+      path: '/my_account/balance',
+      component:resolve => {
+        require(['../views/person_center/balance'], resolve)
+      }
+    },
+    {
+      path: '/my_account/point',
+      component:resolve => {
+        require(['../views/person_center/point'], resolve)
+      }
+    },
+    {
+      path: '/contracted_user/contracted_user_all/health_record/medical_records',
+      component:resolve =>{
+        require(['../views/contracted_user/medical_records'],resolve)
+      }
+    },
+    {
+      path: '/contracted_user/contracted_user_all/health_record/outpatient_records',
+      component:resolve =>{
+        require(['../views/contracted_user/outpatient_records'],resolve)
+      }
+    },
+    {
+      path: '/personal_profile',
+      component:resolve => {
+        require(['../views/person_center/personal_profile'], resolve)
+      }
+    },
+    {
+      path: '/referral_bonuses',
+      component:resolve => {
+        require(['../views/person_center/referral_bonuses'], resolve)
+      }
+    },
+    {
+      path: '/my_account',
+      component:resolve => {
+        require(['../views/person_center/my_account'], resolve)
+      }
+    },
+    {
+      path: '/doctor_qualification',
+      component:resolve => {
+        require(['../views/person_center/doctor_qualification'], resolve)
+      }
+    },
+    {
+      path: '/quick_recovery',
+      component:resolve => {
+        require(['../views/person_center/quick_recovery'], resolve)
+      }
+    },
+    {
+      path: '/config',
+      component:resolve => {
+        require(['../views/person_center/config'], resolve)
+      }
+    },
+    {
+      path: '/config/change_phone',
+      component:resolve => {
+        require(['../views/common/change_phone'], resolve)
+      }
+    },
+    {
+      path: '/config/change_password',
+      component:resolve => {
+        require(['../views/common/change_password'], resolve)
+      }
+    },
+    {
+      path: '/config/feedback',
+      component:resolve => {
+        require(['../views/person_center/feedback'], resolve)
+      }
+    },
+    {
+      path: '/config/about_us',
+      component:resolve => {
+        require(['../views/person_center/about_us'], resolve)
+      }
+    },
+    {
+      path: '/his_order',
+      component:resolve => {
+        require(['../views/home/his_order'], resolve)
+      }
+    },
+    {
+      path: '/service/doctor_circle',
+      component: resolve => {
+        require(['../views/doctor_circle/doctor_circle'], resolve)
+      }
+    },
+    {
+      path: '/service/doctor_circle/communion_circle',
+      component: resolve => {
+        require(['../views/communion_circle/communion_circle'], resolve)
+      }
+    },
+    {
+      path: '/service/lecture_online',
+      component: resolve => {
+        require(['../views/lecture/lecture_online'], resolve)
+      }
+    },
+    {
+      path: '/service/lecture_offline',
+      component: resolve => {
+        require(['../views/lecture/lecture_offline'], resolve)
+      }
+    },
+    {
+      path: '/service/article_manuscripts',
+      component: resolve => {
+        require(['../views/lecture/article_manuscripts'], resolve)
+      }
+    },
+    {
+      path: '/service/historical_consultation',
+      component: resolve => {
+        require(['../views/lecture/historical_consultation'], resolve)
+      }
+    },
+    {
+      path: '/service/doctor_circle/communion_circle/circle_post_text',
+      component: resolve => {
+        require(['../views/circle_text/circle_post_text'], resolve)
+      }
+    },
+    {
+      path: '/service/doctor_circle/communion_circle/circle_post_edit',
+      component: resolve => {
+        require(['../views/circle_text/circle_post_edit'], resolve)
+      }
+    },
+    {
+      path: '/service/doctor_circle/communion_circle/circle_post_comment',
+      component: resolve => {
+        require(['../views/circle_text/circle_post_comment'], resolve)
+      }
+    },
+    {//by yjl
+      path: '/door_bespeak_open/door_bespeak_open',
+      component: resolve => {
+        require(['../views/door_bespeak_open/door_bespeak_open.vue'], resolve)
+      }
+    },
+    {//by yjl
+      path: '/door_bespeak_open/door_server_address',
+      name: 'door_server_address',
+      component: resolve => {
+        require(['../views/door_bespeak_open/door_server_address.vue'], resolve)
+      }
+    },
+    {//by yjl
+      path: '/door_bespeak_open/door_outset_address',
+      name: 'door_outset_address',
+      component: resolve => {
+        require(['../views/door_bespeak_open/door_outset_address.vue'], resolve)
+      }
+    },
+    {//by yjl
+      path: '/door_bespeak_open/door_address_manage',
+      name: 'door_address_manage',
+      component: resolve => {
+        require(['../views/door_bespeak_open/door_address_manage.vue'], resolve)
+      }
+    },
+    {//by yjl
+      path: '/door_bespeak_open/door_add_address',
+      name: 'door_add_address',
+      component: resolve => {
+        require(['../views/door_bespeak_open/door_add_address.vue'], resolve)
+      }
+    },
+    {//by yjl
+      path: '/home/order_details',
+      name: 'order_details',
+      component: resolve => {
+        require(['../views/home/order_details.vue'], resolve)
+      }
+    },
+    {//by yjl
+      path: '/person_center/takebalance',
+      name: 'takebalance',
+      component: resolve => {
+        require(['../views/person_center/takebalance.vue'], resolve)
+      }
+    },
+    {//by yjl
+      path: '/person_center/takepoint',
+      name: 'takepoint',
+      component: resolve => {
+        require(['../views/person_center/takepoint.vue'], resolve)
+      }
+    },
+    {
+      path: '/service/doctor_circle/communion_circle/circle_post_my',
+      component: resolve => {
+        require(['../views/circle_text/circle_post_my'], resolve)
+      }
+    },
+    {
+      path:'/door_orderlist',
+      component:resolve =>{
+        require(['../views/home/door_orderlist'],resolve)
+      }
+    },
+    {
+      path:'/door_orderDetail',
+      component:resolve =>{
+        require(['../views/home/door_orderDetail'],resolve)
+      }
+    },
+    {
+      path:'/door_service_track',
+      component:resolve =>{
+        require(['../views/home/door_service_track.vue'],resolve)
+      }
+    },
+    {
+      path:'/door_health_records',
+      component:resolve =>{
+        require(['../views/home/door_health_records'],resolve)
+      }
+    },
+    {
+      path:'/door_basic_archives',
+      component:resolve =>{
+        require(['../views/home/door_basic_archives'],resolve)
+      }
+    },
+    {
+      path:'/door_development_archives',
+      component:resolve =>{
+        require(['../views/home/door_development_archives'],resolve)
+      }
+    },
+    {
+      path:'/door_result_info',
+      component:resolve =>{
+        require(['../views/home/door_result_info'],resolve)
+      }
+    },
+    {
+      path:'/door_reassign_record',
+      component:resolve =>{
+        require(['../views/home/door_reassign_record'],resolve)
+      }
+    },
+    {
+      path:'/door_orderlist',
+      component:resolve =>{
+        require(['../views/home/door_orderlist'],resolve)
+      }
+    },
+    {
+      path: '/consulting',
+      component: resolve => {
+        require(['../views/consulting/consulting'], resolve)
+      }
+    },
+    {
+      path: '/consulting/consulting_detail',
+      component: resolve => {
+        require(['../views/consulting/consulting_details'], resolve)
+      }
+    },
+    {
+      path: '/consulting/pay_consulting_detail',
+      component: resolve => {
+        require(['../views/consulting/pay_consulting_detail'], resolve)
+      }
+    },
+    {
+      path: '/consulting/consulting_illness_impression',
+      component: resolve => {
+        require(['../views/consulting/consulting_illness_impression'], resolve)
+      }
+    },
+    {
+      path:'/consulting/health_Record',
+      component: resolve => {
+        require(['../views/consulting/health_Record'], resolve)
+      }
+    },
+    {
+      path:'/consulting/beforeConsultation',
+      component: resolve => {
+        require(['../views/consulting/beforeConsultation'], resolve)
+      }
+    },{
+      path: '/register',
+      component:resolve =>{
+        require(['../views/common/register'],resolve)
+      }
+    },
+    {
+      path: '/change_password',
+      component:resolve =>{
+        require(['../views/common/change_password'],resolve)
+      }
+    },
+    {
+      path: '/todolist/more',
+      component:resolve =>{
+        require(['../views/home/more_todolist'],resolve)
+      }
+    },
+    {
+      path: '/service/visit_record',
+      component:resolve =>{
+        require(['../views/service/visit_record'],resolve)
+      }
+    },
+    {
+      path: '/service/visit_details',
+      component:resolve =>{
+        require(['../views/service/visit_details'],resolve)
+      }
+    },
+    {
+      path: '/service/doctor_certification',
+      component:resolve =>{
+        require(['../views/person_center/doctor_certification'],resolve)
+      }
+    },
+    {
+      path: '/service/technician_certification',
+      component:resolve =>{
+        require(['../views/person_center/technician_certification'],resolve)
+      }
+    },
+    {
+      path: '/service/nurse_certification',
+      component:resolve =>{
+        require(['../views/person_center/nurse_certification'],resolve)
+      }
+    },
+    {
+      path: '/service/roleselect',
+      component:resolve =>{
+        require(['../views/person_center/roleselect'],resolve)
+      }
+    },
+    {
+      path: '/consulting/history_consulting_details',
+      component:resolve =>{
+        require(['../views/consulting/history_consulting_details'],resolve)
+      }
+    },
+    {//健康数据by ljw
+      path: '/service/health_data',
+      component:resolve =>{
+      require(['../views/service/health_data'],resolve)
+      }
+    },
+    {//分享by yb
+      path: '/share_page',
+      component:resolve =>{
+      require(['../views/person_center/share_page'],resolve)
+      }
+    }
+  ]
+});

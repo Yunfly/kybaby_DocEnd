@@ -1,0 +1,24 @@
+.order_list input[type= text]{
+    font-size: 1.4rem;
+    color: #333;
+    background: none;
+    border:none;
+    border-bottom:1px solid #eee;
+    padding: 5px 10px
+}
+.order_list input[type= radio]{
+    position: absolute;
+    margin-left:5px;
+    right:15%;
+}
+.radio label{
+    display: block;
+    text-align: left;
+    padding:2px 0 2px 15%;
+}
+.register_btn{
+    padding:40px 40px 20px 40px;
+}
+.order_item .flex_item:nth-child(1){
+        flex:0 0 40%;
+}

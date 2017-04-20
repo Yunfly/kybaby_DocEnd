@@ -1,0 +1,34 @@
+<template>
+  <div id="footer">
+    <ul>
+      <li>
+        <router-link to="/index" exact>
+          <img src="../assets/img/home_active.png"/>
+          <p>首页</p>
+        </router-link>
+      </li>
+      <li>
+        <router-link to="/service" exact>
+          <img src="../assets/img/server_active.png"/>
+          <p>服务</p>
+        </router-link>
+      </li>
+      <li>
+        <router-link to="/contracted_user" exact>
+          <img src="../assets/img/sign_user_active.png"/>
+          <p>签约用户</p>
+        </router-link>
+      </li>
+      <div style="clear:both"></div>
+    </ul>
+  </div>
+</template>
+
+<style scoped>
+#footer ul li a {
+  opacity:0.4;
+}
+#footer ul li a.is-active{
+  opacity: 1;
+}
+</style>

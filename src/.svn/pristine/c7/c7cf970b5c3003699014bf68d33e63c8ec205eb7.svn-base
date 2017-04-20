@@ -1,0 +1,260 @@
+<template>
+  <div>
+    <div id="header" class="doctor_header">
+      <div class="header_Left"><p @click="return_before()"></p></div>
+      <div class="header_center font18">病情印象</div>
+      <div class="header_right"></div>
+    </div>
+    <div id="container">
+      <div class="search_box bgf8">
+        <div class="search_box_btn flex_cont bgfff">
+          <input class="flex_item font10 text" type="text" placeholder="请输入疾病名称">
+          <p class="search_btn"></p>
+        </div>
+      </div>
+      <section>
+        <div class="div_padding">
+          <p class="black_title">已选</p>
+          <ul id="selected_area" class="paragraph">
+              <li v-for="item in illList">{{item.ill}}</li>
+          </ul>
+        </div>
+        <p class="gray_1"></p>
+        <div class="div_padding">
+          <p class="black_title">常用</p>
+          <ul id="choose_area"  class="paragraph">
+            <li is="symptom-tag" v-on:increment="incrementTotal(item.allName,item.id)" v-for="(item,index) in allSymptomTagList" :allName="item.allName"></li>
+          </ul>
+        </div>
+        <div class="areaBox">
+          <textarea v-model="message" id="textareaMsg"></textarea>
+        </div>
+      </section>
+    </div>
+
+
+    <footer id="btn_area">
+
+        <div id="big_btn1" class="font16" v-on:click="endOfCal">确定</div>
+    </footer>
+  </div>
+</template>
+<!--<script src="../public/js/consulting/consulting_illness_impression.js"></script>-->
+<script>
+  import $ from 'jquery'
+  import Vue from 'vue'
+  import ale from '../../ale'
+
+  Vue.component('symptomTag', {
+    template: '<li v-on:click="increment" :class="{active:isActive}">{{ allName }}</li>',
+    props: ['allName'],
+    data: function () {
+      return {
+          isShow:false,
+          isActive:false,
+      }
+    },
+    methods: {
+      increment: function (ill_list,id) {
+          this.isActive=!this.isActive
+        var ill = ill_list.target.innerText;
+       this.$emit('increment',ill,id)
+      }
+    }
+  });
+  export default{
+    data(){
+      return{
+        allSymptomTagList:'',
+        isToogle:false,
+        illList:[],
+        message:''
+      }
+    },
+    created: function () {
+      // 页面加载时跳转
+      // this.loading();
+    },
+    mounted:function(){
+      this.getAllSymptomTag()
+    },
+    methods: {
+      getAllSymptomTag:function(){
+        var that = this;
+        this.$ajax.post(host + 'consultManage.action',' action=getAllSymptomTag')
+          .then(function (res) {
+            that.allSymptomTagList = res.data.commonDiseaseList
+          })
+      },
+      incrementTotal:function (ill,id) {
+          var that = this;
+          for (var i=0;i<this.illList.length;i++){
+              if(that.illList[i].ill==ill){
+                that.illList.splice(i,1);
+                return false
+              }
+          }
+          this.illList.push({
+              'ill':ill,
+              'id':id
+          });
+      },
+      endOfCal:function(){
+          var that = this;
+        var answer = confirm('您确定要结束本次咨询吗？');
+        if (answer == false) {
+          return false;
+        }
+        if(this.illList.length==0){
+            ale("请选择病症标签")
+            return false;
+        }
+        var isEnd=this.$route.query.isTag?'Y':'N';
+        if (isEnd=='Y'){
+              this.saveTagIds();
+        } else{
+          this.$ajax.post(host + 'consultManage.action','action=toEnd&logId='+this.$route.query.logId+'&consult.userId='+this.$route.query.userId+'&symptomDetails='+this.message)
+            .then(function (result) {
+              if (result.data.mes == '成功') {
+                that.saveTagIds();
+              } else {
+                ale(result.data.mes);
+              }
+            })
+        }
+      },
+      saveTagIds:function () {
+        var symptomTagIds = '';
+        var that = this;
+        for(let i=0;i<this.illList.length;i++){
+          symptomTagIds+='::'+this.illList[i].id;
+        }
+        symptomTagIds = symptomTagIds.substring(2);
+        if(submitted.jsControl()){
+          return;
+        }
+        this.$ajax.post( host + 'consultManage.action','action=addSymptomTag&logId='+this.$route.query.logId+'&symptomTagIds='+symptomTagIds+'&consult.userId='+this.$route.query.userId+'&token='+submitted.token)
+          .then(function (result) {
+            if(submitted.submitSuccess(result.data.mes,result.data.token)){
+              return;
+            }
+            if (result.data.mes == "成功") {
+              ale('操作成功')
+            }
+            setTimeout(function () {
+              that.$router.push('/consulting')
+            }, 2500);
+          });
+      }
+    }
+  }
+</script>
+<style scoped>
+  .active{
+    background: #0eced4;
+    color: #fff;
+    border:1px solid #0eced4;
+  }
+  .areaBox{
+    text-align: center;
+    background: #fff;
+    padding: 10px;
+    border-top: 10px solid #f8f8f8;
+  }
+  #textareaMsg{
+    font-size: 1.8rem;
+    outline:none;
+    width: 80%;
+    margin: 0px auto;
+    height: 30vh;
+    border:1px solid #9a9a9a;
+  }
+  #container {
+    margin: 45px 0 50px 0;
+  }
+  section{
+    margin: 50px 0 94px;
+  }
+  #search_box{
+    padding: 10px 18px;
+  }
+  .search_box{
+    position: fixed;
+    left: 0;
+    top: 45px;
+    width: 100%;
+    padding: 10px 0;
+    z-index: 999;
+  }
+  .search_box_btn{
+    margin: 0 20px;
+    padding: 5px 5px 5px 15px;
+    border-radius: 36px;
+  }
+  .search_box_btn input{
+    border: none;
+    outline: none;
+    background: none;
+  }
+  .search_btn{
+    background: url("../../public/img/contracted_user/search_btn.png") no-repeat center;
+    background-size: 20px;
+    width: 27px;
+    height: 27px;
+  }
+  section{
+    margin-top: 57px;
+  }
+  .div_padding{
+    padding: 0 18px;
+    background: #fff;
+  }
+  .black_title{
+    padding: 0 6px;
+    line-height: 2.5;
+    border-bottom: 1px solid #eee;
+  }
+  #choose_area,#selected_area{
+    padding: 8px 6px;
+    overflow: hidden;
+  }
+  #selected_area>li,#choose_area>li{
+    line-height: 1.5;
+    margin-right: 10px;
+    float: left;
+    display: inline-block;
+    -webkit-border-radius:;
+    -moz-border-radius:;
+    border-radius:4px;
+  }
+  #choose_area>li{
+    border-radius: 3px;
+    border: 1px solid #eee;
+    padding: 2px 6px;
+    margin-bottom: 6px;
+  }
+  #choose_area>li.selected{
+    color: #fff;
+    background: #0eced4;
+    border: 1px solid #0eced4;
+  }
+  footer#btn_area{
+    padding: 10px 40px 20px 40px;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    background: #f4f4f4;
+  }
+  #big_btn1{
+    height: 44px;
+    line-height: 44px;
+    text-align: center;
+    border-radius: 3px;
+    margin-bottom: 20px;
+    color: #fff;
+  }
+  #big_btn1{
+    background: #13b9d7;
+  }
+</style>

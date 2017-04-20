@@ -1,0 +1,93 @@
+<template>
+  <div id="app">
+    <loading v-if="loading"></loading>
+    <div class="webscoketMsg" style="z-index: 999" v-if="hasConsMsg">
+      <div v-if="someConsultList[0].symptomDescribe.userType==2">
+        <router-link :to="{path:'/consulting/pay_consulting_detail',query: {id:someConsultList[0].logId,packageId:someConsultList[0].packageId,isTag:'false',userId:someConsultList[0].userId,userType:someConsultList[0].userType}}" >
+          <span class="title" v-if="someConsultList[0].symptomImage!=null&&someConsultList[0].symptomImage!=''">您有一条新消息：[图片]</span>
+          <span class="title" v-else>您有一条新消息：{{someConsultList[0].symptomDescribe}}</span>
+        </router-link>
+      </div>
+      <div v-else>
+        <router-link :to="{path:'/consulting/consulting_detail',query: {id:someConsultList[0].logId,packageId:someConsultList[0].packageId,isTag:'false',userId:someConsultList[0].userId,userType:someConsultList[0].userType}}" >
+          <span class="title" v-if="someConsultList[0].symptomImage!=null&&someConsultList[0].symptomImage!=''">您有一条新消息：[图片]</span>
+          <span class="title" v-else>您有一条新消息：{{someConsultList[0].symptomDescribe}}</span>
+        </router-link>
+      </div>
+      <div style="position: absolute; top: 0; right:15px;height: 36px; width:50px;" @click="hasConsMsg=!hasConsMsg">
+        x
+      </div>
+    </div>
+    <router-view></router-view>
+  </div>
+</template>
+
+<script>
+  import {mapGetters} from 'vuex'
+  export default {
+    name: 'app',
+    data () {
+      return {
+        someConsultList:[],
+        hasConsMsg:false
+      }
+    },
+    computed:mapGetters([
+      'loading',
+
+    ]),
+    created:function(){
+      this.$router.push('/index'); // 页面加载时跳转
+    },
+    beforeUpdate:function () {
+      if(this.$route.path=='/index'||this.$route.path=='/consulting/consulting_detail'){
+
+      } else{
+        websocket.onmessage = this.WSonMessage;
+      }
+    },
+    methods:{
+      WSonMessage:function(event){
+          var that = this;
+          var  websocketDoctorId=sessionStorage.getItem('websocketDoctorId');
+        if(websocketDoctorId==null || websocketDoctorId==undefined){
+          that.getwebsocketDoctorId();
+        }
+          that.someConsultList = [];
+          var data = event.data;
+          var consultationData = JSON.parse(data);
+          if(websocketDoctorId!=consultationData.doctorId){
+              return false
+          }
+          if (consultationData.thisIsUserReply) {   //是用户发的信息
+            that.someConsultList.push({
+              'symptomDescribe':consultationData.symptomDescribe,
+              'symptomImage':consultationData.symptomImage,
+              'logId':consultationData.logId,
+              'packageId':consultationData.fdPackageId,
+              'userId':consultationData.userId,
+              'userType':consultationData.userType,
+            });
+            that.hasConsMsg = true;
+            window.clearTimeout(timer);
+           var timer = setTimeout(function () {
+              that.hasConsMsg = false;
+            },15000)
+          }
+        }
+      }
+  }
+</script>
+
+<style scoped>
+.webscoketMsg{
+  position: fixed;
+  width:100%;
+  text-align: center;
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  top:0;
+  padding: 10px 10px;
+  font-size: 1.2rem;
+}
+</style>

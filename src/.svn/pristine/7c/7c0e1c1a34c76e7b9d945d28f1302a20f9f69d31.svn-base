@@ -1,0 +1,327 @@
+<template>
+  <div>
+    <div id="header" class="doctor_header">
+        <div class="header_Left"><p @click="return_before()"></p></div>
+        <div class="header_center font18">编辑帖子</div>
+        <div class="header_right">
+            <div class="send_post font10 title" id="send_post" v-on:click="submitPost()">发帖</div>
+        </div>
+    </div>
+
+    <div id="container" class="container_box">
+        <div class="post_input_box bgfff">
+            <div class="post_cont_box">
+                <p class="post_title text font12 flex_cont">
+                  <input type="text" class="flex_item" v-model="post_title" maxlength="30" placeholder="请输入标题（1-30个字符）">
+                </p>
+            </div>
+            <div class="post_line">
+                <p class="gray_3"></p>
+            </div>
+            <div class="post_cont_box">
+              <ul class="post_label_box">
+                <li class="post_label font10 title" v-for="(item, index) in circles_label" v-bind:data="item[0]" v-on:click="removeLabel(index)">
+                  <div class="flex_cont">
+                    <img src="../../public/img/circle_text/post_label.png" class="flex_item">
+                    <p>{{item[1]}}</p>
+                  </div>
+                  <!--<p class="post_label_remove label_remove" v-bind:data="item[0]" v-on:click="removeLabel(item[0], index)"></p>-->
+                </li>
+              </ul>
+            </div>
+            <div class="post_cont_box">
+                <div class="post_edit_cont bgf8 flex_cont">
+                    <textarea id="post_content" class="post_text paragraph font12 flex_item" placeholder="忍不住，想说点啥"></textarea>
+                </div>
+            </div>
+            <div class="post_cont_box">
+                <ul class="post_img_box" id="post_upload_img">
+                    <li class="post_send_img">
+                        <div class="post_img post_send_btn">
+                            <img src="../../public/img/circle_text/post_add_img.png" class="img-responsive">
+                            <input type="file" name="file" accept="image/*" size="1" id="upload_img" @change="uploadImg($event)">
+                        </div>
+                    </li>
+                    <li class="post_send_img post_upload_imgs">
+                        <div class="post_imgs">
+                            <!--<img v-for="item in img_list" v-bind:src=item.imgurl width="100%" height="auto">-->
+                            <canvas id="post_image"></canvas>
+                            <p class="post_label_remove img_remove" v-show="img_list != ''" v-on:click="removeImg()"></p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+  </div>
+</template>
+<script>
+  import $ from 'jquery'
+  import ale from '../../ale'
+
+  export default {
+    data() {
+      return {
+        imgUrl : urlWay.fileserver,
+        circle_id : '',
+        circle_name : '',
+        circle_type : '',
+        circles_label : [],
+        post_title : '',
+        label_id : -1,
+        upload_img : '',
+        img_list : [],
+        img_id : -2,
+        img_index : -1
+      }
+    },
+    components : {
+
+    },
+    created : function () {
+      this.circle_id = this.$route.query.id;
+      this.circle_name = this.$route.query.name;
+      this.circle_type = this.$route.query.type;
+      this.getAllLabel(this.circle_type);
+    },
+    mounted () {
+
+    },
+    methods : {
+      getAllLabel : function (type) {
+        var that = this;
+        this.$ajax.post(ringHost+'getDoctorRringInfo.action',"action=allDoctorRingLabelInfo&ringCategory="+type)
+          .then(function(result){
+            if(result.data.mes=="操作成功") {
+              that.circles_label = result.data.someCategoryRingLabelObject;
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      },
+      submitPost : function () {
+        var that = this;
+        var post_label = '',
+          post_content = '',
+          post_img = '';
+
+        //标签
+        var label_len = $(".post_label_active").length;
+
+        if(label_len > 0) {
+          $(".post_label_active").each(function () {
+            post_label += "::" + $(this).attr("data");
+          });
+
+          //内容
+          post_content = $("#post_content").val();
+
+          var canvas=document.getElementById("post_image");
+          var dataurl = canvas.toDataURL("image/png");
+          var imagedata = encodeURIComponent(dataurl);
+          console.log(this.img_list.length);
+
+          if(this.img_list.length > 0) {
+            $.ajax({
+              type:'post',
+              url:ringHost+'doctorRringManage.action',
+              cache:false,
+              async:false,
+              data:{
+                action: "addNewPostInfo",
+                titleContent: this.post_title,
+                textContent: post_content,
+                imgContent: imagedata,
+                categoryId: this.circle_id,
+                doctorRingLabelStr: post_label
+              },
+              success:function(result){
+                if(result.mes == '操作成功'){
+                  ale('发布成功');
+                  setTimeout(function(){
+                    that.$router.push({path:'/service/doctor_circle/communion_circle', query:{id:that.circle_id,name:that.circle_name,type:that.circle_type}});
+                  },1500);
+                }
+              },
+              error : function (result) {
+                ale(result);
+              }
+            });
+          } else {
+              ale("请帖子图片不能空");
+          }
+        } else {
+            ale("请至少选择一个标签");
+        }
+      },
+      removeLabel : function (index) {
+        $(".post_label").eq(index).toggleClass("post_label_active");
+      },
+      uploadImg : function (event) {
+        var obj = event.target;
+        var file = obj.files;
+        var that = this;
+
+
+
+        var c=document.getElementById("post_image");
+        var w = $(".post_imgs").width();
+        var h = $(".post_imgs").height();
+
+
+        var ctx=c.getContext("2d");
+        var img=new Image();
+
+        for(var i = 0; i < file.length; i++) {
+
+          var reader = new FileReader();
+          reader.readAsDataURL(file[i]);
+
+          $(reader).load(function() {
+            var imgURL = this.result;
+
+            that.img_list = imgURL;
+
+            img.src=imgURL;
+            c.width = w;
+            c.height = w * img.height / img.width;
+
+            ctx.drawImage(img,0,0,w,w * img.height / img.width);
+          });
+        }
+      },
+      removeImg : function () {
+//        this.img_id = id;
+        this.img_list = "";
+
+        var c=document.getElementById("post_image");
+        var w = $(".post_imgs").width();
+        var h = $(".post_imgs").height();
+        var ctx=c.getContext("2d");
+
+        ctx.clearRect(0, 0, w, h);
+
+        $("#upload_img").val("");
+      }
+    }
+  }
+
+</script>
+<style scoped>
+  .send_post{
+    position: absolute;
+    width: 46px;
+    height: 24px;
+    right: 18px;
+    top: 9.5px;
+    line-height: 24px;
+    border: 1px solid #ffffff;
+    border-radius: 6px;
+  }
+
+  #container.container_box{
+    margin: 45px 0 50px;
+  }
+  .content_center{
+    display: -webkit-box;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+  }
+  .post_cont_box{
+    padding: 0 28px;
+  }
+  .post_label_box{
+    display: inline-block;
+    padding: 5px 0 0px;
+  }
+  .post_label{
+    position: relative;
+    padding: 5px;
+    background: #d5d5d5;
+    border-radius: 6px;
+    margin: 10px 10px 0 0;
+    float: left;
+  }
+  .post_label_active{
+    background: #0edec4;
+  }
+  .post_label div img{
+    width: 14px;
+    height: 16px;
+  }
+  .post_label div p{
+    padding-left: 5px;
+  }
+  .post_label_remove{
+    position: absolute;
+    right: -5px;
+    top: -5px;
+    background: url("../../public/img/circle_text/post_label_remove.png") no-repeat center;
+    background-size: 12px;
+    width: 12px;
+    height: 12px;
+    line-height: 12px;
+  }
+  .post_input_box{
+    width: 100%;
+  }
+  .post_line{
+    margin: 0 18px;
+  }
+  .post_title{
+    padding: 15px 0;
+  }
+  .post_title input{
+    border: none;
+    outline: none;
+  }
+  .post_edit_cont{
+    margin-top: 15px;
+    padding: 10px;
+  }
+  .post_text{
+    outline: none;
+    resize: none;
+    border: none;
+    height: 140px;
+    line-height: 1.5;
+    text-align: justify;
+    background: none;
+  }
+  .post_img_box{
+    display: inline-block;
+    padding-bottom: 15px;
+  }
+  .post_img{
+    position: relative;
+    width: 50px;
+    margin: 15px 10px 0 0;
+  }
+  .post_send_btn{
+    height: 60px;
+  }
+  .post_img img, .post_img div{
+    width: 100%;
+    height: 100%;
+  }
+  #upload_img{
+    position: absolute;
+    right: 0;
+    top: 0;
+    opacity: 0;
+    filter: alpha(opacity=0);
+  }
+  .post_img_box, .post_upload_imgs, .post_upload_imgs div{
+    width: 100%;
+  }
+  .post_imgs{
+    position: relative;
+    width: 100%;
+    height: auto;
+    margin-top: 10px;
+  }
+  .post_img img{
+    display: block;
+  }
+</style>

@@ -1,0 +1,78 @@
+<template>
+  <div class="bgf8">
+    <div id="header" class="doctor_header">
+      <div class="header_Left" v-on:click="return_before()"><p></p></div>
+      <div class="header_center font18">修改手机号</div>
+    </div>
+    <div id="container_full">
+      <form action="" id="changePhone" method="post">
+        <div class="phone_box bgfff">
+          <div class="register_list flex_cont">
+            <div class="font12">手机号 :</div>
+            <input type="text" name="regist_phone" id="regist_phone" class="flex_item" placeholder="请输入手机号">
+          </div>
+          <p class="gray_3"></p>
+          <div class="register_list flex_cont flex_between">
+            <div class="font12">验证码 :</div>
+            <input type="text" class="flex_item" placeholder="请输入验证码">
+            <button type="button" class="btn " disabled id="get_code">获取验证码</button>
+          </div>
+        </div>
+
+        <div class="register_btn">
+          <button type="submit" id="cbUserAgreement" class="btn btn_block font16">下一步</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</template>
+<script>
+  export default{
+    data(){
+      return{
+
+      }
+    },
+    methods:{
+
+    }
+  }
+</script>
+
+<style scoped>
+  /*.register_list:first-child .font14{ flex:0 0 23%}*/
+  /*.register_list .font14{  width: 28%;  }*/
+  .phone_box{
+    padding: 0 18px;
+  }
+  .register_list {
+    position: relative;
+    height: 48px;
+    padding: 0 6px;
+  }
+  .register_list input {
+    /*font-size: 1.4rem;*/
+    color: #333;
+    background: none;
+    border: none;
+  }
+  .register_btn button {
+    margin-top: 8px;
+  }
+  .register_btn {
+    padding: 40px 40px 20px 40px;
+  }
+  .register_list .btn {
+    height: 40px;
+    color: #fff;
+  }
+  .register_list{
+    line-height: 48px;
+  }
+  input{
+    margin-left: 10px;
+  }
+  .btn{
+    margin-top: 4px;
+  }
+</style>

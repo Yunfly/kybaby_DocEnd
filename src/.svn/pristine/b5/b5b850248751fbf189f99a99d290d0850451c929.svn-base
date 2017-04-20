@@ -1,0 +1,34 @@
+<template>
+  <div id="app">
+    <loading v-if="loading"></loading>
+    <keep-alive>
+      <router-view></router-view>
+    </keep-alive>
+
+    <!--<router-view></router-view>-->
+  </div>
+</template>
+
+<script>
+  import {mapGetters} from 'vuex'
+  export default {
+    name: 'app',
+    data () {
+      return {
+      }
+    },
+    computed:mapGetters([
+      'loading',
+
+    ]),
+    created:function(){
+      this.$router.push('/index'); // 页面加载时跳转
+    },
+    methods:{
+
+    }
+  }
+</script>
+
+<style scoped>
+</style>

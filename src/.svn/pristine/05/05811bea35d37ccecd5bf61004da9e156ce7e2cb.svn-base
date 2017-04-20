@@ -1,0 +1,119 @@
+#container{
+    width: 100%;
+    margin: 45px 0 0px;
+}
+#set_icon>span{
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    background: url('../images/menu/set.png')no-repeat right 20px center;
+    background-size: 20px;
+}
+.info_item {
+    padding: 0 20px;
+    line-height: 50px;
+    background: #fff;
+}
+.info_item>div {
+    padding: 0 8px;
+    border-bottom: 1px solid #e8e8e8;
+}
+.info_item>div:last-child {
+    border-bottom: 0px;
+}
+.gray_title{
+    font-size: 12px;
+    color: #858585;
+    padding: 8px 28px;
+}
+.small_gray{
+    font-size: 12px;
+    color: #858585;
+}
+.info_item>div.choose_address{
+    padding: 12px 8px;
+    line-height: 22px;
+}
+.choose_icon{
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+}
+.choose_icon.selected{
+    background: url(../images/org_huaxi/true.png)no-repeat right center;
+    background-size: 18px;
+}
+.right_arrow{
+    background: url('../images/menu/next.png')no-repeat right 8px center;
+    background-size: 9px;
+}
+.right_txt{
+    margin-right: 20px;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+}
+.service_week{
+    width: 33.3%;
+}
+.service_hours li>div{
+    border-bottom: 1px solid #e8e8e8;
+    border-left: 1px solid #e8e8e8;
+    height: 29px;
+}
+.service_hours li:last-child>div{
+    border-bottom: none;
+    border-left: 1px solid #e8e8e8;
+}
+.service_hours li{
+    position: relative;
+}
+.service_hours li>div.service_del{
+    width: 15px;
+    height: 15px;
+    border-radius: 18px;
+    border: 1px solid #c0c0c0;
+    line-height: 13px;
+    text-align: center;
+    color: #c0c0c0;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    font-size: 20px;
+    background: #fff;
+    font-weight: 100;
+}
+.time_type{
+    color: #9a9a9a;
+}
+.time_type>div{
+    font-size: 13px;
+}
+.time_content,.time_type{
+    text-align: center;
+    line-height: 29px;
+}
+.time_content input{
+    width: 100%;
+    border: none;
+    outline: none;
+    text-align: center;
+}
+.has_line{
+    border-left:1px solid #e8e8e8;
+    border-right:1px solid #e8e8e8;
+}
+.add_time>p{
+    margin: 0 auto;
+    display: inline-block;
+}
+.add_time img{
+    width: 17px;
+}
+.add_time span{
+    margin-left: 3px;
+}
+.btn_box {
+    padding: 20px 40px 20px 40px;
+}

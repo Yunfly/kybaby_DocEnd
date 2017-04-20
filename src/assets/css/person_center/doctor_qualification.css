@@ -1,0 +1,48 @@
+#container{
+    margin: 45px 0px 0px 0px;
+}
+#promptDiv{
+    text-align: center;
+    display: none;
+}
+.row,.much_content{
+    padding:0 18px;}
+.row label{
+    width: 20%;
+    text-align: center;
+    color: #333;
+    font-size: 1.2rem;
+    background-color: none;
+}
+.row{
+    line-height: 48px;
+    height: 48px;
+}
+.row img{
+    width: 32px;
+    height:auto;
+}
+
+.much_content{
+    padding-top: 10px;
+}
+.much_content label{
+    width: 20%;
+    text-align: center;
+}
+.much_content ul li{
+    float: left;
+    margin: 0 5px;
+    height: 30px;
+}
+.blue,.grey{
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 2px;
+}
+.blue{
+    background-color: #0eced4;
+}
+.grey{
+    background-color: #c2c2c2;
+}

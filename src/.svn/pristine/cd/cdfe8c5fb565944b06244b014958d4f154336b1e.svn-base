@@ -1,0 +1,248 @@
+<template>
+  <div id="login">
+    <p class="welcome text-center">欢迎加入</p>
+    <div class="logo">
+      <img src="../../public/img/logo.png" class="img-responsive" alt="">
+    </div>
+
+    <div class="register_box">
+      <div class="register_list flex_cont">
+        <input type="text" id="regist_phone" name="regist_phone" class="flex_simple" placeholder="请输入您的手机号">
+      </div>
+      <p class="gray_3"></p>
+      <div class="register_list flex_cont flex_between flex_simple">
+        <input type="text" id="regist_code" placeholder="请输入您的验证码">
+        <button type="button" class="btn "  @click="httpPost()"  id="get_reg_code">获取验证码</button>
+      </div>
+      <p class="gray_3"></p>
+      <div class="register_list flex_cont">
+        <input type="password" class="flex_simple" name="regist_password" id="regist_password" placeholder="请输入您的新密码">
+      </div>
+      <p class="gray_3"></p>
+      <div class="register_list flex_cont">
+        <input type="password" id="regist_rpassword" name="regist_rpassword" class="flex_simple" placeholder="请确认您的新密码">
+      </div>
+      <p class="gray_3"></p>
+      <div class="register_list flex_cont">
+        <input type="text" class="flex_simple wid100" id="yaoqing_code" name="yaoqing_code" placeholder="请输入推荐人手机号（可不填）">
+      </div>
+    </div>
+
+    <div>
+      <span class="tologin"><router-link to="/login" class="title">已有账号？去登录</router-link></span>
+      <div class="cf"></div>
+    </div>
+
+    <div class="register_btn">
+      <input type="checkbox" id="cbUserAgreement" name="read_xx" ><label for="read_xx">已阅读“康优宝贝”《医生协议》</label>
+      <button type="submit"  class="btn btn_block font16" @click="regist()">注册</button>
+    </div>
+  </div>
+</template>
+<script>
+  import $ from 'jquery'
+  import ale from '../../ale'
+  export default{
+      data(){
+          return{
+            randomNum:''
+          }
+      },
+    mounted:function () {
+     var randomNum='';
+      if(sessionStorage.getItem('is_share') != null){
+        if(window.location.href.indexOf('?')>-1){
+          sessionStorage.setItem('is_share','share_y');
+          var urlmes=window.location.search.substring(1).split('#')[0];
+          $('#yaoqing_code').val(urlmes.split('::')[1]);
+        }
+      }
+    },
+    methods:{
+      regist:function (){
+        var that = this;
+        var phone = $("#regist_phone").val();
+        var password = $("#regist_password").val();
+        var referPhone=$.trim($("#yaoqing_code").val());
+        var checkphone = /^1[3|4|5|7|8][0-9]{9}$/;
+        if(phone==null||phone==""||!checkphone.test(phone)){
+          alert("请输入手机号");
+        }
+        else if($("#regist_code").val()==null||$("#regist_code").val()==""){
+          alert("请输入验证码");
+        }
+        else if(password==null||password==""){
+          alert("请输入密码");
+        }
+        else if($("#regist_rpassword").val()==null||$("#regist_rpassword").val()==""){
+          alert("请确认密码");
+        }
+        else if($("#regist_password").val()!=$("#regist_rpassword").val()){
+          alert("两次密码不匹配");
+        }
+        else if($("#regist_code").val()!= that.randomNum){
+          alert("验证码错误");
+        }
+        else if(!$("#cbUserAgreement").is(":checked")){
+          alert("请先阅读医生协议");
+        }
+        else if(phone==referPhone){
+          alert("不能推荐自己哦！");
+        }else{
+          $.ajax({
+            type : 'post',
+            async: false ,
+            url : host+'regist.action',
+            data : {action:"regist",phone:phone,password:password,referPhone:referPhone},
+            success : function(result) {
+              if(result.mes=="已注册"){
+                alert("用户已存在");
+              }
+              else if(result.mes=="成功"){
+                //window.location.href="consultation.html";
+                window.location.href="roleselect.html";
+              }
+            }
+          });
+        }
+      },
+      numReduce:function (){
+        var that = this;
+        //发送验证码
+        var ttt=60;
+        (function num(){
+            ttt--;
+            if(ttt <= 0){
+              ttt = 60;
+              $('#get_reg_code').attr('onclick','httpPost()').text('获取验证码').css('backgroundColor','#50c1e9');
+            }else{
+              $('#get_reg_code').removeAttr('onclick').css('backgroundColor','#dadada');
+              $('#get_reg_code').text("("+ttt+"s)");
+              setTimeout(num, 1000);
+            }
+          })()
+
+      },
+      httpPost:function (){
+        var checkphone = /^1[3|4|5|7|8][0-9]{9}$/;
+        var that = this;
+        var mobile = $("#regist_phone").val();
+        if(mobile==null||mobile==""||!checkphone.test(mobile)){
+          alert("请输入手机号");
+        }
+        else{
+          $.ajax({
+            type : 'post',
+            async: false ,
+            url : host+'httpPost.action',
+            data : {action:"regist",mobile:mobile},
+            success : function(result) {
+              if(result.mes=="已注册"){
+                alert("手机号已注册");
+              }else{
+                that.randomNum = result.randomNum;
+                //ale(result.randomNu m);
+                that.numReduce();
+              }
+            }
+          });
+        }
+      },
+      hide_doctor_xieyi:function (){
+        $('#doctor_xieyi_box').empty().hide();
+        $('#doctor_xieyi_tit').hide();
+      },
+    }
+  }
+</script>
+<style scoped>
+  #login{
+    background: url("../../public/img/register/bg.png") no-repeat;
+    background-size: 100%;
+    height:100vh;
+    position: fixed;
+    top: 0;
+    width: 100%;
+  }
+  .welcome{
+    color: #fff;
+    font-size: 1.7rem;
+    margin-top:5.1%;
+  }
+  .logo{
+    width: 64px;
+    margin: 0 auto;
+    margin-top: 8%;
+  }
+  .register_box{
+    margin:8% 18px 10px 18px;
+    background-color: rgba(225,225,225,0.78);
+    border-radius: 4px;
+    margin-top: 8%;
+  }
+  .register_list{
+    position: relative;
+    height: 48px;
+    padding:0 18px;
+  }
+
+  .register_list .btn{
+    height:40px;
+    margin-top:4px;
+    color: #fff;
+  }
+  .register_list input{
+    font-size: 1.4rem;
+    color: #333;
+    background: none;
+    border:none;
+
+  }
+  .flex_between{
+    justify-content: space-between;
+  }
+  .flex_between input{
+    width:60%;
+  }
+  .tologin{
+    color: #fff;
+    float: right;
+    font-size: 1.2rem;
+    margin-right:5%;
+  }
+
+  label{
+    background:none;
+    color:#fff;
+    font-size:1.2rem;
+    position: relative;
+    vertical-align: 4px;
+    margin-left: 5px;
+  }
+  .register_btn{
+    padding:40px 40px 20px 40px;
+  }
+  input[type = checkbox]{
+    -moz-appearance: none;
+    appearance: none;
+    background:url(../../public/img/check_black.png)  no-repeat;
+    background-size:36px 18px;
+    height:18px;width:18px;
+    background-position:0 0;
+    border:none;
+    border-radius:0px;
+    outline:none;
+    -webkit-appearance: none;
+  }
+  input[type=checkbox]:checked{
+    background-position:-18px 0;
+  }
+  .register_btn button{
+    margin-top:8px;
+  }
+  .forget{
+    float: left;
+    margin-left: 5%;
+    color: #fff;
+  }
+</style>

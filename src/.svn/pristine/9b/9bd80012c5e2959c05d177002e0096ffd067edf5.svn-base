@@ -1,0 +1,514 @@
+<template>
+  <div id="firstComponent">
+    <div class="htmleaf-container">
+      <div>
+        <div>
+          <div class="mobile">
+            <!-- Checkbox to toggle the menu -->
+            <input type="checkbox" id="tm" />
+            <!-- The menu -->
+            <ul class="sidenav">
+              <div><label for="tm"><img src="../assets/img/person_center/close.png"/></label> </div>
+              <li class="mgt10"><b>{{doctorInfo.doctorName}} <span>{{doctorInfo.doctorTitle}}</span></b></li>
+              <router-link to="personal_profile" ><li><b><img src="../assets/img/person_center/about.png"/>我的资料</b></li></router-link>
+              <li><router-link to="my_account"><b><img src="../assets/img/person_center/mycount.png"/>我的账户</b></router-link></li>
+              <li >
+                <router-link v-if="doctorInfo.doctorType =='医生'" v-bind:to="{path:'/doctor_certification', query:{type:doctorInfo.doctorType, status:doctorInfo.flowStatus}}">
+                  <b><img src="../assets/img/person_center/doctor.png"/>{{doctorInfo.doctorType}}认证</b>
+                </router-link>
+
+                <router-link v-else-if="doctorInfo.doctorType =='技师'" v-bind:to="{path:'/technician_certification', query:{type:doctorInfo.doctorType, status:doctorInfo.flowStatus}}">
+                  <b><img src="../assets/img/person_center/doctor.png"/>{{doctorInfo.doctorType}}认证</b>
+                </router-link>
+
+                <router-link v-else-if="doctorInfo.doctorType =='护士'" v-bind:to="{path:'/nurse_certification', query:{type:doctorInfo.doctorType, status:doctorInfo.flowStatus}}">
+                  <b><img src="../assets/img/person_center/doctor.png"/>{{doctorInfo.doctorType}}认证</b>
+                </router-link>
+
+                <router-link v-else="doctorInfo.doctorType ==''" v-bind:to="{path:'/roleselect', query:{}}">
+                  <b><img src="../assets/img/person_center/doctor.png"/>{{doctorInfo.doctorType}}认证</b>
+                </router-link>
+
+              </li>
+              <li><router-link to="quick_recovery"><b><img src="../assets/img/person_center/kjhf.png"/>快捷回复</b></router-link></li>
+              <li><router-link to="referral_bonuses"><b><img src="../assets/img/person_center/tjjl.png"/>推荐奖励</b></router-link></li>
+              <li><router-link to="config"><b><img src="../assets/img/person_center/option.png"/>设&nbsp;&nbsp;置&nbsp;&nbsp;&nbsp;&nbsp;</b></router-link></li>
+              <li class="exit"><router-link to="/login"><b>退出登录</b></router-link></li></ul>
+
+            <!-- Content area -->
+            <section>
+              <div>
+                <!-- Label for #tm checkbox -->
+
+                <div id="header1" class="index_header doctor_header">
+                  <div class="header_Left"><p><label for="tm">Click Me</label></p></div>
+                  <div class="header_center"><img src="../assets/img/home/company.png"></div>
+                  <div class="header_right text_center">
+                    <!--<input type="text" id="copy" style="opacity: 0;filter: alpha(opacity=0);" value="aa1111111111111111"/>-->
+                  </div>
+
+                  <div class="header_img">
+                    <div @click="receiveOrder(doctorInfo.id,line)">离线</div>
+                    <img  v-bind:src=imgUrl+doctorInfo.doctorImage v-cloak />
+                  </div>
+                </div>
+                <div class="person">
+                  <p>{{doctorInfo.doctorName}}</p>
+                  <span>可提现金额：{{balance}} 元</span>
+                </div>
+                <div id="container">
+                  <div class="menu">
+                    <router-link to="/consulting">
+                      <div class="consult">
+                        <img src="../assets/img/home/consult.png">
+                        <!--<span>22</span>-->
+                        <p>咨询</p>
+                      </div>
+                    </router-link>
+
+                    <div class="left_order">
+                      <router-link to="/outpatient_order">
+                        <div class="clinic_order">
+                          <img src="../assets/img/home/section_order.png">
+                          <span>门诊订单</span>
+                        </div>
+                      </router-link>
+                      <router-link to="/door_orderlist">
+                        <div class="on_site_order">
+                          <img src="../assets/img/home/door_order.png">
+                          <span>上门订单</span>
+                        </div>
+                      </router-link>
+                    </div>
+                    <div class="cf"></div>
+                  </div>
+                  <div class="todo_list">
+                    <span class="todo_menu"></span>
+                    <span>待办事项</span>
+                    <span class="float-right">
+                            <router-link to="/todolist/more">更多</router-link>
+                            </span>
+                  </div>
+                  <div class="menu">
+                    <div class="list_box">
+                      <ul class="list_head flex_cont">
+                        <li></li>
+                        <li class="text-left flex_item"><img src="../assets/img/home/todolist.png"/></li>
+                        <li class="flex_item text-center"></li>
+                      </ul>
+
+                      <ul class="list_item flex_cont" v-for="item in todolist.todayHomePageWaitingProcessList">
+                        <li ></li>
+                        <li class="flex_item ">{{item.orderTime}}</li>
+                        <li class="flex_item text-center" v-show="item.orderType" v-if="item.orderType=='上门订单'" ><router-link to="/door_orderlist" class="paragraph">您有一单{{item.orderType}}</router-link></li>
+                        <li class="flex_item text-center" v-show="item.orderType" v-else-if="item.orderType=='儿科订单'" ><router-link to="/outpatient_order" class="paragraph">您有一单{{item.orderType}}</router-link></li>
+                        <li class="flex_item text-center" v-show="item.orderType" v-else-if="item.orderType=='儿保订单'" ><router-link to="/his_order" class="paragraph">您有一单{{item.orderType}}</router-link></li>
+                      </ul>
+
+                      <ul class="list_head flex_cont">
+                        <li></li>
+                        <li class="text-left flex_item"><img src="../assets/img/home/todo_later.png"/></li>
+                        <li class="flex_item text-center"></li>
+                      </ul>
+                      <ul class="list_item flex_cont" v-for="item in todolist.otherHomePageWaitingProcessList">
+                        <li ></li>
+                        <li class="flex_item ">{{item.orderTime}}</li>
+                        <li class="flex_item text-center" v-show="item.orderType" v-if="item.orderType=='上门订单'" ><router-link to="/door_orderlist" class="paragraph">您有一单{{item.orderType}}</router-link></li>
+                        <li class="flex_item text-center" v-show="item.orderType" v-else-if="item.orderType=='儿科订单'" ><router-link to="/outpatient_order" class="paragraph">您有一单{{item.orderType}}</router-link></li>
+                        <li class="flex_item text-center" v-show="item.orderType" v-else-if="item.orderType=='儿保订单'" ><router-link to="/his_order" class="paragraph">您有一单{{item.orderType}}</router-link></li>
+                      </ul>
+                    </div>
+                    <div class="box_line flex_cont"></div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+    <side-footer></side-footer>
+  </div>
+</template>
+
+<script>
+  import SideFooter from '../component/footer'
+  export default{
+    data(){
+      return{
+        articles:'',
+        doctorInfo:{
+          octorImage:'../../public/img/home/headimg.jpg'
+        },
+        imgUrl : urlWay.fileserver,
+        host:host,
+        todolist:'',
+        hostFile:hostFile,
+        orderTime:'',
+        balance:'',
+        line:''
+      }
+    },
+    components:{
+      SideFooter
+    },
+    mounted: function() {
+      this.getSubmittedToken();
+      this.getwebsocketDoctorId();
+      this.autoLogin();
+      var that = this;
+
+
+      this.$ajax.post(todolist_host+'homePageWaitingProcess/homePageWaitingProcess.action','action=getHomePageWaitingProcessList')
+        .then(function(result){
+          that.todolist = result.data;
+          if (result.data.todayHomePageWaitingProcessList[0] == undefined) {
+            that.todolist.todayHomePageWaitingProcessList.push({
+              orderTime: '暂无订单',
+              orderType: false
+            });
+          }
+          if (result.data.otherHomePageWaitingProcessList[0] == undefined){
+            that.todolist.otherHomePageWaitingProcessList.push({
+              orderTime:'暂无订单',
+              orderType:false
+            });
+
+          }
+        });
+
+      this.$ajax.post(host+'accountManage.action','action=all')
+        .then(function(result){
+          that.balance = result.data.balance
+        })
+    },
+    methods:{
+      receiveOrder:function(){
+
+      }
+    }
+  }
+</script>
+<style scoped>
+  #header1 .header_right {
+    width: 20%;
+    float: right;
+    line-height: 45px;
+    height: 45px;
+  }
+  ::-webkit-scrollbar{width:0px}
+  *{
+    -webkit-overflow-scrolling: touch;
+  }
+  body{
+    background: #f8f8f8;
+  }
+  #container {
+    margin: 0px 18px 48px 18px;
+  }
+  .index_header{
+    position: inherit;
+    width: 100%;
+    top: 0;
+    z-index: 999;
+    color: #fff;
+  }
+  .index_header .header_left, .index_header .header_Left {
+    width: 20%;
+    float: left;
+    line-height: 45px;
+    font-size: 30px;
+    height: 45px;
+    color: #c8c8c8;
+  }
+  .index_header.doctor_header {
+    background: url("../public/img/home/bg.png") no-repeat;
+    background-size: 100% 100%;
+    height:124px;
+  }
+  .index_header .header_center {
+    width: 60%;
+    float: left;
+    line-height: 45px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-size: 18px;
+  }
+  .index_header .header_left p, .index_header .header_Left p {
+    background: url('../public/img/home/center_icon.png') no-repeat left 20px center;
+    background-size: 18px;
+    height: 45px;
+  }
+  .header_center img{
+    width:95px;
+  }
+  .header_img{
+    display: inline-block;
+    position: relative;
+    top: 40px;
+  }
+  .header_img div{
+    position: absolute;
+    width: 24px;
+    font-size: 1.2rem;
+    top: -2px;
+    left: 65px;
+    background: #c2c2c2;
+    border-radius: 6px;
+    padding: 3px 5px;
+  }
+  .header_img img{
+    border-radius:50%;
+    height:65px;
+    width:65px;
+    box-shadow: 0px 0px 10px 2px rgba(0,141,167,0.3)
+  }
+  .person p {
+    color: #333;
+    font-size:1.4rem;
+    text-align: center;
+    margin-top: 35px;
+    white-space:nowrap;
+  }
+  .person span {
+    margin-bottom:10px;
+    display: block;
+    font-size: 1.2rem;
+    text-align:center;
+    color: #9a9a9a;
+    margin-top: 5px;
+    white-space:nowrap;
+  }
+  .menu{
+    border-radius: 6px;
+    box-shadow: 0px 0px 6px 0px rgba(225,225,225,0.3);
+    background: #fff;
+    margin-bottom: 10px;
+    font-size:1.4rem;
+  }
+  .menu:last-child{
+    min-height: 150px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .consult {
+    float: left;
+    width: 50%;
+    text-align: center;
+    padding: 20px 0 10px 0;
+    border-right: 1px solid #eee;
+  }
+  .consult img{
+    width:50px;
+  }
+  .consult span{
+    line-height: 1.2rem;
+    position: absolute;
+    border-radius: 50%;
+    background: red;
+    font-size: 1.2rem;
+    padding: 2px;
+    color: #fff;
+  }
+  .consult p {
+    margin: 10px;
+  }
+  .left_order{
+    float: left;
+    width:49%;}
+  .clinic_order img,.on_site_order img{
+    width: 30px;
+    height:auto;
+    vertical-align: middle;
+  }
+  .left_order span{
+    margin-left:10px;
+  }
+  .clinic_order,.on_site_order{
+    text-align: center;
+    height:57px;
+    line-height:57px;
+  }
+  .on_site_order{
+    border-top:1px solid #eee;
+  }
+  .todo_list{
+    text-align: left;
+    color: #9a9a9a;
+    font-size:1.2rem;
+    margin-bottom:10px;
+  }
+  .todo_list a {
+    color: #9a9a9a;
+  }
+  .todo_menu{
+    display: inline-block;
+    width: 4px;
+    border-radius: 2px;
+    height: 14px;
+    background: #13b9d7;
+    position: relative;
+    top: 2px;
+
+  }
+  .list_box{
+    padding-top:1px;
+    padding-bottom:10px;
+    border-left:1px dashed #eee;
+    margin-left: 20px;
+  }
+  .list_head,.list_item{
+    margin-top: 10px;
+    position: relative;
+    left: -28px;
+  }
+  .list_item{
+    left:-27.5px;
+    font-size:1.2rem;
+  }
+  .list_head li:nth-child(1),.list_item li:nth-child(1){
+    background: url(../public/img/home/todoIcon2.png) no-repeat;
+    background-size: 100% 100%;
+    height: 15px;
+    width: 15px;
+    margin:2px 10px 0px 20px;
+  }
+  .list_item li:nth-child(1){
+    background: url(../public/img/home/todoIcon3.png) no-repeat;
+    background-size: 100% 100%;
+    height:8px;
+    width:8px;
+    position: relative;
+    top: -1px;
+    margin:5px 13px 0px 23px;
+  }
+  .list_item li:nth-child(2){
+    color: #333;
+    white-space: nowrap;
+  }
+  .list_item li:nth-child(3) a , .list_item li:nth-child(3){
+    color: #9a9a9a;
+    font-size:1.2rem;
+    line-height:16px;
+  }
+  .list_head li:nth-child(2) img{
+    height: 14px;
+    top: -1px;
+    position: relative;
+    width: auto;
+  }
+
+  /*侧边栏*/
+  .htmleaf-container{
+    margin: 0 auto;
+    text-align: center;
+  }
+  .htmleaf-content {
+    float: left;
+    width: 100%;
+    font-size: 150%;
+    padding: 1em;
+  }
+
+  .htmleaf-content p {
+    margin: 1em 0;
+    padding: 5em 0 0 0;
+    font-size: 0.65em;
+  }
+  .mobile {
+    float: left; position: relative;
+
+    overflow: hidden;
+  }
+  #tm {display: none;}
+  .mobile section {
+    background: #f8f8f8;
+    width: 100vw;
+    position: relative; transition: all 0.25s;
+  }
+  .mobile section label {
+    z-index: 9999;
+    color: white;
+    font: bold 14px Montserrat;
+    text-align: center;
+    border: 2px solid white;
+    border-radius: 4px;
+    display: block;
+    padding: 10px 0;
+    width: 20%;
+    position: absolute;
+    left: 0%;
+    top: 0px;
+    cursor: pointer;
+    text-transform: uppercase;
+    opacity: 0;
+  }
+  .sidenav {
+    width: 250px;
+    position: absolute; left: 0; top: 0; bottom: 0; padding-top: 50px;
+  }
+  .sidenav li {list-style-type: none;}
+  .mgt10{
+    margin-top:10px;
+  }
+  .sidenav a { color: #333; text-decoration: none; }
+  .sidenav b {
+    font: bold 12px/48px Montserrat; display: block;
+    opacity: 0; transform: translateX(50px); transition: all 0.4s;
+    text-align: left;
+    padding-left:30px;
+    font-size: 1.4rem;
+    font-weight: 100;
+  }
+  .sidenav b:hover{
+    background-color: #f3f3f3;
+  }
+  .sidenav span{
+    color: #9a9a9a;
+    font-size:1.2rem;
+  }
+  .sidenav b img{
+    width: 18px;
+    height: auto;
+    margin-right: 10px;
+    margin-top: -2.5px;
+  }
+  .sidenav div{
+    text-align: left;
+    padding-left: 20px;
+  }
+  .sidenav div img{
+    width: 20px;
+    height:auto;
+  }
+  .sidenav i {
+    display: block; width: 50px; float: left;
+    font-size: 16px; line-height: 48px; text-align: center;
+  }
+  .exit{
+    position: absolute;
+    bottom: 48px;
+    display: block;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    border-top: 1px solid #eee;
+  }
+  .exit b{
+    padding:0;
+    text-align: center;
+  }
+  #tm:checked ~ section label{  width:100%;  height:100vh;}
+  #tm:checked ~ section {transform: translateX(250px);opacity:0.2;height:100vh;}
+  #tm:checked ~ .sidenav{  background-color: #fff;}
+  #tm:checked ~ .sidenav b {opacity: 1; transform: translateX(0);}
+  #tm:checked ~ .sidenav li:nth-child(2) b {transition-delay: 0.08s;}
+  #tm:checked ~ .sidenav li:nth-child(3) b {transition-delay: 0.16s;}
+  #tm:checked ~ .sidenav li:nth-child(4) b {transition-delay: 0.24s;}
+  #tm:checked ~ .sidenav li:nth-child(5) b {transition-delay: 0.32s;}
+  #tm:checked ~ .sidenav li:nth-child(6) b {transition-delay: 0.40s;}
+  #tm:checked ~ .sidenav li:nth-child(7) b {transition-delay: 0.48s;}
+  #tm:checked ~ .sidenav li:nth-child(8) b {transition-delay: 0.56s;}
+
+</style>

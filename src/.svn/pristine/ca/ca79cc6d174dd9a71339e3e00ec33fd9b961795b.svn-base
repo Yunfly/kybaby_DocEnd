@@ -1,0 +1,327 @@
+<template>
+  <div>
+    <div id="header" class="doctor_header">
+      <div class="header_Left"><p @click="return_before()"></p></div>
+      <div class="header_center font18">与 {{userName}} 咨询</div>
+      <div class="header_right">
+          <div></div>
+      </div>
+    </div>
+    <div id="container" v-bind:style="{marginBottom:input_height+'px'}">
+      <div id="consulting_list">
+        <div class="padding_original">
+          <div class="dialogue_box" v-for="(item,index) in someConsultList">
+            <p class="consult_time">{{item.submitTime}}</p>
+            <!--用户回复-->
+            <div class="doctor_li" v-if="item.isReply =='N'">
+              <div class="flex_cont flex_simple">
+                <div class="header_img"><img :src="imgUrl+consulting.userImg.split('::')[0]" alt="" /></div>
+                <div class="from_div_left"></div>
+                <div class="flex_item doctor_dialogue">
+                  <p class="doctor_words" v-if="item.symptomImage==''||item.symptomImage==null ">{{item.symptomDescribe}}</p>
+                  <img :src=imgUrl+item.symptomImage  v-else >
+                </div>
+              </div>
+            </div>
+            <!--医生回复-->
+            <div class="user_li" v-else >
+              <div class="flex_cont flex_simple">
+                <div class="flex_item user_dialogue">
+                  <p class="user_words" v-if="item.doctorReplyImg==null">{{consultingMsg[index].doctorReply}}</p>
+                  <img :src=imgUrl+item.doctorReplyImg v-else >
+
+                </div>
+                <div class="from_div_right"></div>
+                <div class="header_img"><img :src="imgUrl+consulting.doctorImg" alt=""/></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="input_box" class="padding bgfff" v-if="illShow" >
+      <p class="font14">病情印象：</p>
+      <ul id="selected_area" class="paragraph">
+        <li v-for="item in consultIllRecordList">{{item.commonDisease.allName}}</li>
+        <div class="cf"></div>
+      </ul>
+
+      <ul id="selected_area" class="paragraph">
+        <li v-for="item in consultIllRecordList">{{item.commonDisease.symptomDetails}}</li>
+      </ul>
+
+    </div>
+  </div>
+
+</template>
+
+<script>
+  import $j from 'jquery'
+  import ale from '../../ale'
+  import illnessImpression from '../../component/consulting_illness_impression.vue'
+  export default{
+    data(){
+      return{
+        layer_menu:false,
+        consulting:'',
+        imgUrl : urlWay.fileserver,
+        consultingMsg:[],
+        someConsultList:[],
+        other_content:false,
+        sendMsg:'',
+        isTag:this.$route.query.isTag,
+        logId:this.$route.query.id,
+        userId:this.$route.query.userId,
+        userType:this.$route.query.userType,
+        packageId:this.$route.query.packageId,
+        userName:'',
+        kyBaby:true,
+        str:'',
+        consultIllRecordList:'',
+        input_height:'',
+        illShow:true
+
+      }
+    },
+    created: function () {
+      this.getConsultingDetail(this.consultingMsg)
+    },
+    updated:function(){
+      var input_box = window.document.getElementById('input_box');
+      this.input_height = input_box.offsetHeight;
+      $j('#container').scrollTop(1000000);
+      $j(window).scrollTop($j(document).height());
+    },
+    mounted:function(){
+      websocket.onmessage = this.WSonMessage;
+      if(this.userType==3||this.userType==4){
+        this.kyBaby = false
+      }
+    },
+    components:{
+      illnessImpression
+    },
+    methods: {
+      getConsultingDetail:function(listData){
+        var that = this;
+        this.$ajax.post(host+'consultManage.action','action=after&logId='+that.logId+'&isEnd=Y'+'&consult.userId='+that.userId)
+          .then(function(result){
+            if(result.data.consultIllRecordList.length==0){
+                that.illShow=false
+            }
+            that.consultIllRecordList = result.data.consultIllRecordList;
+            that.consulting = result.data;
+            that.someConsultList = result.data.someConsultList;
+            that.userName = result.data.userImg.split('::')[1];
+            for(var i = 0; i < result.data.someConsultList.length; i++) {
+              var doctorReply='';
+              if(result.data.someConsultList[i].doctorReply.indexOf('family_doctor_patient.html')>-1){
+                doctorReply="儿科门诊预约";
+              }else if(result.data.someConsultList[i].doctorReply.indexOf('family_doctor_erbao.html')>-1){
+                doctorReply="儿保门诊预约";
+              }else if(result.data.someConsultList[i].doctorReply.indexOf('family_doctor_vaccine.html')>-1){
+                doctorReply="计免预约";
+              }else if(result.data.someConsultList[i].doctorReply.indexOf('family_doctor_expert_team.html')>-1){
+                doctorReply="推荐团队";
+              } else{
+                doctorReply=false;
+              }
+              listData.push({
+                "doctorReply" : doctorReply?doctorReply:result.data.someConsultList[i].doctorReply
+              })
+            }
+          })
+      }
+    }
+  }
+</script>
+<style scoped>
+  .header_right .more_btn{
+    background: url("../../public/img/more_menu_btn.png") no-repeat center right 18px;
+    background-size: 20px;
+    height: 100%;
+  }
+  .consult_time{
+    font-size: 1.0rem;
+    text-align: center;
+    color: #9a9a9a;
+    margin: 15px 0;
+  }
+  .doctor_li,.user_li{
+    margin-bottom: 15px;
+  }
+  .header_img{
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+  .other_item .flex_cont {
+    flex-wrap: wrap
+  }
+  .isTag{
+    position: fixed;
+    bottom: 0px;
+    width: 85%;
+    padding: 1.5% 7.5%;
+    background: #fff;
+    box-shadow: 0 0 6px 0.5px rgba(0,0,0,0.05);
+  }
+  .other_item ul li{
+    flex: 0 0 25%;
+    margin: 10px 0 0 0;
+    color: #9a9a9a;
+  }
+  #selected_area li{
+    float: left;
+    padding:5px;
+  }
+  .flex_item img{
+    width:initial;
+    display: block;
+    margin:0 auto 5px auto;
+  }
+  .flex_cont li img{
+    width: 36px;
+  }
+  .header_img>img{
+    width: 100%;
+  }
+  .doctor_words,.user_words{
+    padding: 6px;
+    border-radius: 4px;
+    background: #fff;
+    line-height: 1.5;
+    font-size: 1.4rem;
+    display: inline-block;
+    word-break: break-all;
+  }
+  .user_dialogue{
+    margin-left: 12px;
+    text-align: right;
+  }
+  .doctor_words{
+    margin-right: 12px;
+  }
+  .user_words{
+    text-align: left;
+  }
+  /*对话框小三角*/
+  .from_div_left{
+    padding-left: 6px;
+    width:0;
+    height:0;
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    border-right: 6px solid #fff;
+  }
+  .from_div_right{
+    padding-right: 6px;
+    width:0;
+    height:0;
+    border-top:4px solid transparent;
+    border-bottom: 4px solid transparent;
+    border-left: 6px solid #fff;
+  }
+  /*下方输入框*/
+  #input_box{
+    box-shadow: 0 0 10px 1px rgba(0,0,0,0.05);
+    padding:5px 18px 12px 18px;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+  }
+  #input_box>#input_div{
+    padding: 8px;
+    border-bottom: 1px solid #e8e8e8;
+
+  }
+  #input_div>p{
+    padding-right: 6px;
+    outline: none;
+  }
+  #add_but{
+    margin-left: 8px;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background: url("../../public/img/consulting/consult_add.png")no-repeat center;
+    background-size: 100%;
+  }
+  #other_content{
+    padding: 12px 18px 0 18px;
+  }
+  .other_item{
+    text-align: center;
+    font-size: 12px;
+  }
+  .other_item>p{
+    margin-top: 5px;
+  }
+  #send{
+    height: 20px;
+  }
+  #showBusiness ul li img {
+    width: 40px;
+  }
+  #sendImg {
+    display: block;
+    width: 40px;
+    height: 40px;
+    position: relative;
+    top: -40px;
+    opacity: 0;
+    z-index: 2;
+  }
+  .ordinary_btn {
+    padding: 3px 5px 3px;
+    background: #0eced4;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #fff;
+  }
+  .send_img{
+    max-width: 145px;
+    text-align: center;
+    overflow: hidden;
+  }
+  .send_img>img{
+    max-height: 87px;
+  }
+  /*右边菜单栏*/
+  div#layer_menu{
+    position: absolute;
+    width: 103px;
+    border-radius: 3px;
+    background: rgba(0,0,0,.8);
+    color: #fff;
+    text-align: center;
+    right: 18px;
+    top: 37px;
+  }
+  div#layer_menu>div{
+    border-bottom: 1px solid #fff;
+    line-height: 36px;
+  }
+  div#layer_menu>div:last-child{
+    border-bottom: 0px;
+  }
+  span#black_triangle {
+    position: absolute;
+    top: -8px;
+    right: 2px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid rgba(0,0,0,.8);
+    text-align: center;
+  }
+  #layer_menu a{
+    color: #fff;
+  }
+  div#layer_menu.hidden{
+
+  }
+</style>

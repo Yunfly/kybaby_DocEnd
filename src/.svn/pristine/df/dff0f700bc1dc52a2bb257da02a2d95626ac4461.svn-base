@@ -1,0 +1,127 @@
+<template>
+  <div class="bgfff">
+    <div id="header" class="doctor_header">
+      <div class="header_Left" v-on:click="return_before()"><p></p></div>
+      <div class="header_center font18">余额提现</div>
+      <div class="header_right"></div>
+    </div>
+    <div id="container_full" class="bgfff">
+      <p class="takebalance_input"><input type="number" :placeholder="placeholder+cashMoney" v-model="balanceMoney" id="balanceNum"></p>
+      <p class="gray_3"></p>
+      <p class="takebalance_note" style="color: yellowgreen">说明：<br/>
+        1、每月{{cashStartDate}}号--{{cashEndDate}}号为提现申请日，请在此日期段内进行提现操作。<br/>
+        2、当月收入请在下月{{cashStartDate}}--{{cashEndDate}}号间申请提现。<br/>
+        3、正常情况下，提现金额将在之后的两个工作日内办理完毕。如遇特殊情况，请及时与我们取得联系。</p>
+    </div>
+    <div id="footer" @click="takeBalance">
+      <div class="btn_box">
+        <button type="submit" id="cbUserAgreement" class="btn btn_block font16">提交</button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  import $ from 'jquery';
+  import ale from '../../ale.js';
+  import common from '../../public/js/common';
+  //  import ale from '../../ale.js';
+  export default {
+    data(){
+      return {
+        singleAtLeastWithdrawMoney:null,
+        cashStartDate:null,
+        cashEndDate:null,
+        cashMoney:null,
+        placeholder:'可提现金额：'
+      }
+    },
+    components:{
+//      BtnFooter
+    },
+    created:function(){
+      this.cashStartDate = this.$route.params.cashStartDate;
+      this.cashEndDate = this.$route.params.cashEndDate;
+    },
+    mounted:function() {
+      var _this=this;
+      this.$ajax.post(host+'accountManage.action','action=getCashMoney')
+        .then(function (result) {
+          _this.singleAtLeastWithdrawMoney = result.data.singleAtLeastWithdrawMoney;
+          _this.cashMoney = result.data.cashMoney;
+      });
+    },
+    methods:{
+      takeBalance:function(){
+        var _this=this;
+        var val=$("#balanceNum").val();
+        if($("#balanceNum").val()==""||$("#balanceNum").val()==null){
+          ale("请输入提现金额");
+          return false;
+        }
+        else{
+          if(/^[0-9]+(.[0-9]{1,3})?$/.test(val)){
+            if(val<_this.singleAtLeastWithdrawMoney){
+              ale('最小提现金额为'+_this.singleAtLeastWithdrawMoney+'元');
+              return false;
+            }
+            $.ajax({
+              type : 'post',
+              async: false ,
+              url : host+'accountManage.action',
+              data : {action:"takeBalance",takeBalance:$("#balanceNum").val()},
+              success : function(result) {
+                if(result.mes=="请登录"){
+                  ale('请登录');
+                  _this.$router.push('/login');
+                }
+                else if(result.mes=="成功"){
+                  common().return_before();
+                } else if(result.mes!='成功'){
+                  ale(result.mes);
+                  return false;
+                }
+              }
+            });
+            return false;
+          }else{
+            ale('请输入非负数字');
+          }
+        }
+      },
+
+    }
+  }
+</script>
+
+<style scoped>
+
+  #footer {
+    padding-top: 0;
+    height: 45px;
+    background: #f8f8f8;
+  }
+  .btn_box {
+    padding: 0 40px;
+  }
+  /*余额提现 积分兑现 takebalance takepoint*/
+  .takebalance_input {
+    width: 80%;
+    padding: 0 10%;
+    margin-top: 10px;
+    background: #fff;
+    height: 50px;
+    line-height: 50px;
+  }
+  .takebalance_input input {
+    width: 100%;
+    border: none;
+  }
+  .takebalance_note {
+    width: 90%;
+    margin: 0 auto;
+    font-size: 0.75em;
+    padding-top: 10px;
+  }
+
+</style>

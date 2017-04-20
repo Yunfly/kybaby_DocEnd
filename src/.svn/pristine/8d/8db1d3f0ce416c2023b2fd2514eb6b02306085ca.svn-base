@@ -1,0 +1,386 @@
+<template>
+
+  <div  class="bgfff">
+    <div id="header" class="doctor_header">
+      <div class="header_Left" v-on:click="return_before()"><p></p></div>
+      <div class="header_center font18">坐诊记录</div>
+      <div class="header_right">
+        <div class="more_btn"></div>
+      </div>
+      <div class="cf"></div>
+      <div class="order_btn">
+        <div v-on:click="typeChange('儿科',index)" :class="{active:index == 0}">儿科门诊</div>
+        <div v-on:click="typeChange('儿保',index)" :class="{active:index == 1}">儿保门诊</div>
+
+      </div>
+      <div>
+        <nav class="flex_cont font12">
+          <div class="tag_menu flex_item" v-on:click="change('全部',0)">全部</div>
+          <div class="tag_menu flex_item" v-on:click="change('已完成',1)">已完成</div>
+          <div class="tag_menu flex_item" v-on:click="change('未完成',2)">未完成</div>
+        </nav>
+        <div class="content_tab_box flex_cont">
+          <div class="content_center tab_logo_box" v-bind:style="{ marginLeft:idx*33.3+'%' }">
+            <div class="tab_logo"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="container_full" class="bgfff">
+      <section id="visit_record">
+        <div v-show="orderType=='儿科'">
+          <ul class="all_list" v-show="liState=='全部'">
+            <li v-for="item in orders">
+              <router-link v-bind:to="{path:'/service/visit_details',query:{id:item.doctorMorePracticeOrgInfo.id,
+              doctor_id:item.doctorInfo.id,data_id:item.id,status:item.orgClinicStatus,name:item.clinicOrg,
+              date:item.clinicDate,time:item.clinicBeganTime+'-'+item.clinicEndTime}}">
+                <div class="flex_cont">
+                  <p class="li_date font10 flex_item">{{item.clinicDate}}</p>
+                  <p class="li_type font10">儿科门诊</p>
+                </div>
+                <div class="flex_cont">
+                  <p class="li_address font10 flex_item">{{item.clinicOrg}}</p>
+                  <p class="li_time font10">{{item.clinicBeganTime}}-{{item.clinicEndTime}}</p>
+                </div>
+                <div class="record_type completed" v-if="item.orgClinicStatus=='已完成'"></div>
+                <div class="record_type in_work" v-else-if="item.orgClinicStatus=='上班中'"></div>
+                <div class="record_type not_at" v-else-if="item.orgClinicStatus=='未开始'"></div>
+                <div class="record_type not_sign" v-else-if="item.orgClinicStatus=='未签到'"></div>
+                <div class="record_type not_sign_back" v-else-if="item.orgClinicStatus=='未签退'"></div>
+                <div class="record_type please_sign" v-else-if="item.orgClinicStatus=='请签到'"></div>
+                <!--<div class="record_type unfinished" v-else="item.orgClinicStatus=='未完成'"></div>-->
+              </router-link>
+            </li>
+          </ul>
+          <ul class="unfinished_list" v-show="liState=='未完成'">
+            <li v-for="item in orders" v-if="item.orgClinicStatus=='上班中'||item.orgClinicStatus=='未开始'
+          ||item.orgClinicStatus=='请签到'">
+              <router-link v-bind:to="{path:'/service/visit_details',query:{id:item.doctorMorePracticeOrgInfo.id,
+              doctor_id:item.doctorInfo.id,data_id:item.id,status:item.orgClinicStatus,name:item.clinicOrg,
+              date:item.clinicDate,time:item.clinicBeganTime+'-'+item.clinicEndTime}}">
+                <div class="flex_cont">
+                  <p class="li_date font10 flex_item">{{item.clinicDate}}</p>
+                  <p class="li_type font10">儿科门诊</p>
+                </div>
+                <div class="flex_cont">
+                  <p class="li_address font10 flex_item">{{item.clinicOrg}}</p>
+                  <p class="li_time font10">{{item.clinicBeganTime}}-{{item.clinicEndTime}}</p>
+                </div>
+                <div class="record_type completed" v-if="item.orgClinicStatus=='已完成'"></div>
+                <div class="record_type in_work" v-else-if="item.orgClinicStatus=='上班中'"></div>
+                <div class="record_type not_at" v-else-if="item.orgClinicStatus=='未开始'"></div>
+                <div class="record_type please_sign" v-else-if="item.orgClinicStatus=='请签到'"></div>
+                <!--<div class="record_type unfinished" v-else="item.orgClinicStatus=='未完成'"></div>-->
+              </router-link>
+            </li>
+          </ul>
+          <ul class="complete_list" v-show="liState=='已完成'">
+            <li v-for="item in orders" v-if="item.orgClinicStatus=='已完成'||item.orgClinicStatus=='未签到'||item.orgClinicStatus=='未签退'">
+              <router-link v-bind:to="{path:'/service/visit_details',query:{id:item.doctorMorePracticeOrgInfo.id,
+              doctor_id:item.doctorInfo.id,data_id:item.id,status:item.orgClinicStatus,name:item.clinicOrg,
+              date:item.clinicDate,time:item.clinicBeganTime+'-'+item.clinicEndTime}}">
+                <div class="flex_cont">
+                  <p class="li_date font10 flex_item">{{item.clinicDate}}</p>
+                  <p class="li_type font10">儿科门诊</p>
+                </div>
+                <div class="flex_cont">
+                  <p class="li_address font10 flex_item">{{item.clinicOrg}}</p>
+                  <p class="li_time font10">{{item.clinicBeganTime}}-{{item.clinicEndTime}}</p>
+                </div>
+                <div class="record_type completed" v-if="item.orgClinicStatus=='已完成'"></div>
+                <div class="record_type not_sign" v-else-if="item.orgClinicStatus=='未签到'"></div>
+                <div class="record_type not_sign_back" v-else-if="item.orgClinicStatus=='未签退'"></div>
+              </router-link>
+            </li>
+          </ul>
+        </div>
+        <div v-show="orderType=='儿保'" id="child">
+          <ul class="all_list" v-show="liState=='全部'">
+            <li v-for="vm in childOrders">
+                <div class="flex_cont">
+                  <p class="li_date font10 flex_item">{{vm.organChildcareOpenResources.openDate}}</p>
+                  <p class="li_type font10">儿保门诊</p>
+                </div>
+                <div class="flex_cont">
+                  <p class="li_address font10 flex_item">{{vm.organChildcareOpenResources.hospitalBasicInfo.hospitalLname}}</p>
+                  <p class="li_time font10">{{vm.organChildcareOpenResources.openStartTime}}-{{vm.organChildcareOpenResources.openEndTime}}</p>
+                </div>
+            </li>
+          </ul>
+          <ul class="unfinished_list" v-show="liState=='未完成'">
+            <li v-for="vm in childOrders" v-if="vm.workStatus=='上班中'||vm.workStatus=='未开始'
+          ||vm.workStatus=='未签到'||vm.workStatus=='请签到'||vm.workStatus=='未签退'">
+              <div class="flex_cont">
+                <p class="li_date font10 flex_item">{{vm.organChildcareOpenResources.openDate}}</p>
+                <p class="li_type font10">儿保门诊</p>
+              </div>
+              <div class="flex_cont">
+                <p class="li_address font10 flex_item">{{vm.organChildcareOpenResources.hospitalBasicInfo.hospitalLname}}</p>
+                <p class="li_time font10">{{vm.organChildcareOpenResources.openStartTime}}-{{vm.organChildcareOpenResources.openEndTime}}</p>
+              </div>
+            </li>
+          </ul>
+          <ul class="complete_list" v-show="liState=='已完成'">
+            <li v-for="vm in childOrders" v-if="vm.workStatus=='已完成'">
+              <div class="flex_cont">
+                <p class="li_date font10 flex_item">{{vm.organChildcareOpenResources.openDate}}</p>
+                <p class="li_type font10">儿保门诊</p>
+              </div>
+              <div class="flex_cont">
+                <p class="li_address font10 flex_item">{{vm.organChildcareOpenResources.hospitalBasicInfo.hospitalLname}}</p>
+                <p class="li_time font10">{{vm.organChildcareOpenResources.openStartTime}}-{{vm.organChildcareOpenResources.openEndTime}}</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </div>
+</template>
+<script>
+  // require('../../public/css/animate.css')
+  import $j from 'jquery'
+  export default{
+    data(){
+      return{
+        orders:'',
+        childOrders:'',
+        liState:'全部',
+        orderType:'儿科',
+        isActive:0,
+        index:0,
+        idx:0
+      }
+    },
+    created: function () {
+    },
+    mounted:function(){
+      var that = this;
+      this.$ajax.post(urlWay.clinicHost+'doctorClinic.action',
+        'action=getDoctorMorePracticeList&doctorMorePractice.clinicOrgType=1')
+        .then(function(result){
+          that.orders = result.data.doctorMorePracticeList;
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      this.$ajax.post(urlWay.fdmanageHost+'fdService.action',
+        'action=getOrganChildcareOpenDoctorByDoctor')
+        .then(function(result){
+          that.childOrders = result.data.organChildcareOpenDoctorList;
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+    methods: {
+      change:function(state,index){
+        this.idx = index;
+        if(state=="未完成"){
+          this.liState="未完成";
+          $(this).css('left',"20px");
+        }else if(state=="已完成"){
+          this.liState="已完成";
+        }else{
+          this.liState="全部";
+        }
+      },
+      typeChange:function(state,index){
+        this.isActive=index;
+        if(state=="儿科"){
+          this.orderType="儿科";
+          this.index=0;
+        }else{
+          this.orderType="儿保";
+          this.index=1;
+        }
+      }
+    }
+  }
+</script>
+<style scoped>
+  body{
+    background: #f4f4f4;
+  }
+  nav{
+    padding: 12px 0 4px;
+    text-align: center;
+  }
+  .li_type{
+    color: #0eced4;
+  }
+  .li_address,.li_time{
+    color: #9a9a9a;
+  }
+  .order_btn div a{ color:#fff}
+  .active a{
+    color: #0eced4!important;
+  }
+  section>div{
+    padding: 0 18px;
+    border-radius: 3px;
+    box-shadow: 0px 0px 6px 0px rgba(225,225,225,0.3);
+    background: #fff;
+  }
+  section li{
+    padding: 15px 6px;
+    border-bottom: 1px solid #eee;
+    line-height: 20px;
+  }
+  section li:last-child{
+    border-bottom: 0;
+  }
+  ul li{
+    border-bottom:1px solid #eee;
+    padding-top:10px;
+  }
+  #container_full{
+    margin-top:183px;
+  }
+  .doctor_header{
+    height:auto!important;
+  }
+  .order_btn{
+    padding-bottom: 10px;
+    margin:30px 0;
+  }
+  .order_btn div{
+    display: inline-block;
+    padding:5px 10px;
+    margin:0;
+  }
+  .order_btn div:first-child{
+    border:1px solid #eee;
+    border-top-left-radius: 16px;
+    border-bottom-left-radius: 16px;
+    margin-right: -2px;
+  }
+  .order_btn div:last-child{
+    border:1px solid #eee;
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+    margin-left: -2px;
+  }
+  .order_btn .active{
+    background-color: #fff;
+    color: #0eced4;
+  }
+  .tag_menu,.select{
+    color: #fff;
+  }
+  .head_img img{
+    width: 55px;
+    height: auto;
+    border-radius: 50%;
+  }
+  .head_img p {
+    line-height:2.8rem;
+  }
+  .list_box .flex_cont .flex_item:nth-child(1){
+    flex:0 0 30%;
+    text-align: center;
+  }
+  .list_box .flex_cont .flex_item:nth-child(2){
+    flex:0 0 50%;
+    line-height:2rem;
+  }
+  .list_box .flex_cont .flex_item:nth-child(3){
+    flex:0 0 20%;
+  }
+
+
+  /*body{*/
+  /*background: #f4f4f4;*/
+  /*}*/
+  /*nav{*/
+  /*padding: 12px 0 4px;*/
+  /*text-align: center;*/
+  /*}*/
+  .li_type{
+    color: #0eced4;
+  }
+  .li_address,.li_time{
+    color: #9a9a9a;
+  }
+  section#visit_record>ul{
+    border-radius: 3px;
+    box-shadow: 0px 0px 6px 0px rgba(225,225,225,0.3);
+    background: #fff;
+  }
+  section#visit_record li{
+    padding: 15px 6px;
+    border-bottom: 1px solid #eee;
+    line-height: 20px;
+  }
+  section#visit_record #child li{
+    padding: 15px 6px;
+  }
+  section#visit_record li:last-child{
+    border-bottom: 0;
+  }
+  nav.nav_gray{
+    color: #9a9a9a;
+  }
+  nav>div.selected{
+    color: #13b9d7;
+    /*font-size: 1.6rem;*/
+  }
+  #visit_record li{
+    position: relative;
+  }
+  .record_type{
+    position: absolute;
+    top: 0;
+    right: -18px;
+    width: 40px;
+    height: 48px;
+  }
+  .record_type.unfinished{
+    background: url('../../public/img/server/unfinished.png')no-repeat center;
+    background-size: 40px;
+  }
+  .record_type.please_sign{
+    background: url('../../public/img/server/please_sign.png')no-repeat center;
+    background-size: 40px;
+  }
+  .record_type.in_work{
+    background: url('../../public/img/server/in_work.png')no-repeat center;
+    background-size: 40px;
+  }
+  .record_type.not_at{
+    background: url('../../public/img/server/not_at.png')no-repeat center;
+    background-size: 40px;
+  }
+  .record_type.not_sign{
+    background: url('../../public/img/server/not_sign.png')no-repeat center;
+    background-size: 40px;
+  }
+  .record_type.not_sign_back {
+    background: url('../../public/img/server/not_sign_back.png')no-repeat center;
+    background-size: 40px;
+  }
+  .record_type.completed{
+    background: url('../../public/img/server/completed.png')no-repeat center;
+    background-size: 40px;
+  }
+  /*三角形*/
+  .tab_logo {
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid #ffffff;
+    text-align: center;
+  }
+  .tab_logo_box {
+    width: 33.3%;
+  }
+  .content_center {
+    display: -webkit-box;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+  }
+  /*#unfinished_list,#complete_list{*/
+  /*display: none;*/
+  /*}*/
+</style>

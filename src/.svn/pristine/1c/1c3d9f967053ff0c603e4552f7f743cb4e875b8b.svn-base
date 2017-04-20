@@ -1,0 +1,167 @@
+<template>
+  <div class="bgfff">
+    <div id="header" class="doctor_header">
+      <div class="header_Left" @click="return_before()"><p></p></div>
+      <div class="header_center font18">余额</div>
+    </div>
+    <div id="container_full" class="bgfff text-center" :class="{scrollBar:isActive}">
+      <div>
+        <div class="balance_box font16" v-show="!isActive">
+          <b>{{balance}} 元</b>
+        </div>
+      </div>
+      <div class="balance_btn" @click="goTakeBalance" v-show="!isActive">
+        去提现
+      </div>
+
+      <div style="position: absolute;bottom:10%;width: 100%;color: #fff">
+        <b>{{balance}} 元</b>
+      </div>
+    </div>
+    <div class="balance_title" :class="{scrollTitle:isActive}">
+      <p>余额明细</p>
+    </div>
+    <p class="gray_3"></p>
+    <div class="balance_item">
+      <div class="flex_cont flex_simple balance_list" v-for="(item,index) in amountDetail">
+        <div class="flex_item">
+          <ul>
+            <li>{{amountDetail[index].accountDesc}}</li>
+            <li class="paragraph font10">{{amountDetail[index].updateTime}}</li>
+          </ul>
+        </div>
+        <div class="flex_item ">
+          <p class="text-right rise" v-if="amountDetail[index].type =='+'" >{{amountDetail[index].type}} {{amountDetail[index].amount}} 元</p>
+          <p class="text-right down" v-else="amountDetail[index].type =='-'" >{{amountDetail[index].type}} {{amountDetail[index].amount}} 元</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</template>
+
+<script>
+  import $j from 'jquery'
+  export default{
+    name:'about_us',
+    data(){
+      return{
+        amountDetail:'',
+        balance:'',
+        cashStartDate:null,
+        cashEndDate:null,
+        isActive:false,
+        isScroll:true
+      }
+    },
+    mounted:function(){
+
+      var that = this;
+      window.onscroll = function () {
+          console.log(document.documentElement.scrollTop || document.body.scrollTop)
+        if(document.documentElement.scrollTop || document.body.scrollTop>=400){
+          that.isActive = true;
+          if(that.isScroll){
+            $j(window).scrollTop(5);
+            that.isScroll = false
+          }
+
+        }
+        if(document.documentElement.scrollTop || document.body.scrollTop==0){
+          setTimeout(function () {
+            that.isActive = false;
+          }, 1000);
+
+        }
+      };
+      this.$ajax.post(host+'accountManage.action','action=balance')
+        .then(function(result){
+          that.amountDetail = result.data.amountDetail;
+          that.balance = result.data.balance;
+          that.cashStartDate = result.data.cashStartDate;
+          that.cashEndDate = result.data.cashEndDate;
+        })
+    },
+    methods:{
+      goTakeBalance:function (){
+        var _this=this;
+        _this.$router.push({name:'takebalance',params:{cashStartDate:_this.cashStartDate,cashEndDate:_this.cashEndDate}});
+      }
+    }
+  }
+</script>
+
+<style scoped>
+  .scrollTitle{
+    margin-top:21vh;
+    transition: all 1.4s;
+  }
+  .scrollBar{
+    position: fixed;
+    width: 100vw;
+    top: -60vh;
+    transition: all 1.4s;
+  }
+  #container_full{
+    transition: all 1.4s;
+    margin:0;
+    background: url("../../public/img/person_center/bg@2x.png") no-repeat;
+    background-size: 100% 100%;
+    height:80vh;
+    box-shadow: 0 0 10px 0px rgba(0,0,0,0.3);
+  }
+  #header{
+    background: none!important;
+  }
+  .balance_box{
+    color: #0cced4;
+    position: relative;
+    top: 25vh;
+    background: #faf7ed;
+    display: inline-block;
+    border-radius: 50%;
+    width: 40vw;
+    height: 40vw;
+    line-height:40vw;
+    box-shadow: 0 0 114px 8px rgba(255,255,255,1);
+  }
+  .balance_btn{
+    position: relative;
+    top: 31vh;
+    display: inline-block;
+    border: 1px solid #eee;
+    padding: 4px 12px;
+    border-radius: 15px;
+    color: #eee;
+  }
+  .balance_list{
+    padding:5px 0;
+    border-bottom: 1px solid #eee;
+  }
+  .balance_list:last-child{
+    border-bottom: none;
+  }
+  .balance_title{
+    padding: 5px 18px;
+    color: #9a9a9a;
+    font-size: 1.2rem;
+  }
+  .balance_item{
+    padding:0 18px;
+  }
+  .balance_item ul {
+    padding:5px 0;
+  }
+  .balance_item ul li{
+    padding:1px 0;
+  }
+  .flex_item ul li{
+    white-space: nowrap;
+  }
+  .rise{
+    color: #13b9d7;
+  }
+  .down{
+    color: #d94d4d;
+  }
+</style>

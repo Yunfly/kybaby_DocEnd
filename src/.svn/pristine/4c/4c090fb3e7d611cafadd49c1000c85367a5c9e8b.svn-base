@@ -1,0 +1,170 @@
+<!doctype html>
+<html class="no-js" lang="zh-cn">
+<head>
+    <title>首页</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1"/>
+    <link rel="stylesheet" href="../public/css/normalize.css">
+    <link rel="stylesheet" href="../public/css/main.css">
+    <link rel="stylesheet" href="../public/css/index/home.css">
+
+    <!-- for APP -->
+    <!-- <link rel="shortcut icon" href="images/favicon.png">
+     <link rel="apple-touch-icon" href="images/apple-touch-icon.png">-->
+    <!--<script>window.$ = window.jQuery = WLJQ;</script>-->
+    <!--<script src="js/initOptions.js"></script>-->
+    <style type="text/css">
+
+    </style>
+</head>
+<style>
+</style>
+<body>
+<div class="htmleaf-container">
+    <div>
+        <div>
+            <div class="mobile">
+
+                <!-- Checkbox to toggle the menu -->
+                <input type="checkbox" id="tm" />
+                <!-- The menu -->
+                <ul class="sidenav">
+                    <div><label for="tm"><img src="../public/img/person_center/close.png"/></label> </div>
+                    <li class="mgt10"><a href="#"><b>土豆豆 <span>副主任医师</span></b></a></li>
+                    <li><a href="../person_center/personal_profile.html"><b><img src="../public/img/person_center/about.png"/>我的资料</b></a></li>
+                    <li><a href="../person_center/my_account.html"><b><img src="../public/img/person_center/mycount.png"/>我的账户</b></a></li>
+                    <li><a href="../person_center/doctor_qualification.html"><b><img src="../public/img/person_center/doctor.png"/>医生认证</b></a></li>
+                    <li><a href="../person_center/quick_recovery.vue"><b><img src="../public/img/person_center/kjhf.png"/>快捷回复</b></a></li>
+                    <li><a href="../person_center/referral_bonuses.vue"><b><img src="../public/img/person_center/tjjl.png"/>推荐奖励</b></a></li>
+                    <li><a href="../person_center/config.html"><b><img src="../public/img/person_center/option.png"/>设&nbsp;&nbsp;置&nbsp;&nbsp;&nbsp;&nbsp;</b></a></li>
+                    <li class="exit"><a href="#"><b>退出登录</b></a></li>
+                </ul>
+                <!-- Content area -->
+                <section>
+                    <div>
+                    <!-- Label for #tm checkbox -->
+
+                    <div id="header" class="doctor_header">
+                        <div class="header_Left"><p><label for="tm">Click Me</label></p></div>
+                        <div class="header_center"><img src="../public/img/home/company.png"></div>
+                        <div class="header_right text_center">
+                            <!--<input type="text" id="copy" style="opacity: 0;filter: alpha(opacity=0);" value="aa1111111111111111"/>-->
+                        </div>
+
+                        <div class="header_img">
+                            <div>离线</div>
+                            <img src="../public/img/home/headimg.jpg" alt="">
+                        </div>
+                    </div>
+                    <div class="person">
+                        <p>土豆豆</p>
+                        <span>可提现金额：1000.00元</span>
+                    </div>
+                    <div id="container">
+                        <div class="menu">
+                            <div class="consult">
+                                <img src="../public/img/home/consult.png">
+                                <span>22</span>
+                                <p>咨询</p>
+                            </div>
+                            <div class="left_order">
+                                <div class="clinic_order">
+                                    <img src="../public/img/home/section_order.png">
+                                    <span>门诊订单</span>
+                                </div>
+                                <div class="on_site_order">
+                                    <img src="../public/img/home/door_order.png">
+                                    <span>上门订单</span>
+                                </div>
+                            </div>
+                            <div class="cf"></div>
+                        </div>
+                        <div class="todo_list">
+                            <span class="todo_menu"></span>
+                            <span>待办事项</span>
+                            <span class="float-right">
+                            <a href="">更多</a>
+                            </span>
+                        </div>
+                        <div class="menu">
+                            <div class="list_box">
+                                <ul class="list_head flex_cont">
+                                    <li></li>
+                                    <li class="text-left flex_item"><img src="../public/img/home/todolist.png"/></li>
+                                    <li class="flex_item text-center"></li>
+                                </ul>
+                                <ul class="list_item flex_cont">
+                                    <li ></li>
+                                    <li class="flex_item ">2017-03-07 9:34:45</li>
+                                    <li class="flex_item text-center">您有一单门诊订单</li>
+                                </ul>
+                                <ul class="list_head flex_cont">
+                                    <li></li>
+                                    <li class="text-left flex_item"><img src="../public/img/home/todo_later.png"/></li>
+                                    <li class="flex_item text-center"></li>
+                                </ul>
+                                <ul class="list_item flex_cont">
+                                    <li ></li>
+                                    <li class="flex_item ">2017-03-07 9:34:45</li>
+                                    <li class="flex_item text-center">您有一单门诊订单</li>
+                                </ul>
+                                <ul class="list_item flex_cont">
+                                    <li ></li>
+                                    <li class="flex_item ">2017-03-07 9:34:45</li>
+                                    <li class="flex_item text-center">您有一单门诊订单</li>
+                                </ul>
+                                <ul class="list_item flex_cont">
+                                    <li ></li>
+                                    <li class="flex_item ">2017-03-07 9:34:45</li>
+                                    <li class="flex_item text-center">您有一单门诊订单</li>
+                                </ul>
+                                <ul class="list_item flex_cont">
+                                    <li ></li>
+                                    <li class="flex_item ">2017-03-07 9:34:45</li>
+                                    <li class="flex_item text-center">您有一单门诊订单</li>
+                                </ul>
+                                <ul class="list_item flex_cont">
+                                    <li ></li>
+                                    <li class="flex_item ">2017-03-07 9:34:45</li>
+                                    <li class="flex_item text-center">您有一单门诊订单</li>
+                                </ul>
+                            </div>
+                            <div class="box_line flex_cont"></div>
+                        </div>
+                    </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="footer">
+    <ul>
+        <a href="">
+            <li class="select">
+                <img src="../public/img/home_active.png"/>
+                <p>首页</p>
+            </li>
+        </a>
+        <a href="">
+            <li>
+            <img src="../public/img/server.png"/>
+            <p>服务</p>
+            </li>
+        </a>
+        <a href=""> <li>
+            <img src="../public/img/sing_user.png"/>
+            <p>签约用户</p>
+        </li></a>
+    </ul>
+</div>
+
+
+<script src="../public/js/modernizr-2.8.3.min.js"></script>
+<script src="../public/js/jquery-2.1.3.js"></script>
+<script src="../public/js/main.js"></script>
+<script src="../public/js/config.js"></script>
+</body>
+</html>

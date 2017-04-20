@@ -1,0 +1,40 @@
+.config_list li:hover{
+    background-color: #eee;
+}
+.config_list li p:nth-child(1){
+    width:25%;
+    display: inline-block;
+}
+.config_list li p:nth-child(2){
+    width:55%;
+    display: inline-block;
+}
+.header_Right{
+    width: 10%;
+    float: right;
+    color: #c8c8c8;
+}
+.header_Right p {
+    background: url(../../img/right.png) no-repeat;
+    background-size: 100% 100%;
+    width: 9px;
+    height: 13px;
+    position: relative;
+    top: 17px;
+}
+.config_list li{
+    line-height: 48px;
+    height:48px;
+    border-bottom:1px solid #eee;
+    padding:0 18px;
+}
+#quick_btn{
+    position: fixed;
+    width:100%;
+    background-color: #fff;
+    height:44px;
+}
+#quick_btn div{
+    width:85%;
+    margin:0 auto;
+}

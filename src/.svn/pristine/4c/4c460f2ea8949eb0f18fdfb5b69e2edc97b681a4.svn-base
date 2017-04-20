@@ -1,0 +1,176 @@
+<template>
+  <div>
+    <div id="header" class="doctor_header">
+      <div class="header_Left" v-on:click="return_before()"><p></p></div>
+      <div class="header_center">坐诊详情</div>
+      <div class="header_right"></div>
+    </div>
+    <div id="container">
+      <section>
+        <div class="text-center ">
+          <p>您已经选择{{name}}</p>
+          <p class="font10 paragraph" id="service_time">门诊时间:{{date}} {{time}}</p>
+        </div>
+        <div class="font10 paragraph" id="details_content">
+          说明：上午需坐诊{{orders.amCount}}例，下午需坐诊{{orders.pmCount}}例，全天需坐诊{{parseInt(orders.pmCount)+parseInt(orders.amCount)}}例。
+          如当天不足最低坐诊次数，则平台支付给医生保底报酬，保底报酬在完成坐诊后两个工作日内结清(半天：{{orders.halfDayMoney}}元,全天：{{orders.baseSalary}}元)。
+          <!--如超过当天保底门诊数，坐诊医生可获得每一例挂号费用的{{parseFloat(orders.commissionPerCase)*100}}%作为提成。-->
+        </div>
+      </section>
+    </div>
+    <footer id="btn_area" v-show=tag>
+      <button id="big_btn1" class="btn btn_block font16" :disabled=btn1 v-on:click="work('我要上班',data_id)">我要上班</button>
+      <button id="big_btn2" class="btn btn_block font16" :disabled=btn2 v-on:click="work('我要下班',data_id)">我要下班</button>
+      <!--<div  disabled >我要上班</div>-->
+      <!--<div id="big_btn2" >我要下班</div>-->
+    </footer>
+  </div>
+</template>
+<script>
+  // require('../../public/css/animate.css')
+  import $j from 'jquery'
+  export default{
+    data(){
+      return{
+        orders:'',
+        name:'',//坐诊机构
+        date:'',//坐诊日期
+        btn1:true,//上班不可点
+        btn2:true,//下班不可点
+        currentTime:'',//当前时间
+        status:'',//上班状态
+        tag:false,//是否显示上下班按钮
+        statusInterface:'',//上下班接收口
+        type:0//儿科
+      }
+    },
+    created: function () {
+      // 页面加载时跳转
+      // this.loading();
+      this.id = this.$route.query.id;
+      this.doctor_id = this.$route.query.doctor_id;
+      this.status = this.$route.query.status;
+      this.name = this.$route.query.name;
+      this.date = this.$route.query.date;
+      this.time = this.$route.query.time;
+      this.data_id = this.$route.query.data_id;
+      this.type = this.$route.query.type;
+    },
+    mounted:function(){
+      var that = this;
+      var id = this.id;
+      var doctor_id = this.doctor_id;
+      this.$ajax.post(urlWay.clinicHost+'doctorClinicOrder.action',
+          'action=orgSetShow&orgSetShow.doctorInfo.id='+doctor_id+'&orgSetShow.doctorMorePracticeOrgInfo.id='+id+'&tag='+this.type+'&organChildcareOpenDoctor.id='+this.data_id)
+        .then(function(result){
+          that.orders = result.data.orgSetShow;
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      this.$ajax.post(urlWay.clinicHost+'doctorClinic.action', 'action=getCurrentTime')
+        .then(function(result){
+          that.currentTime=result.data.currentTime;
+          var now = that.currentTime;
+          var start = that.date;
+          if(that.status=='请签到'){
+            that.tag=true;
+            if(now.split(' ')[0]==start){
+              that.btn1 = false;
+            }
+          }else if(that.status=='上班中'){
+            that.tag=true;
+            if(now.split(' ')[0]==start){
+              that.btn2 = false;
+            }
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+    methods: {
+      work:function(state,id){
+        var txt = '';
+        if(state=='我要上班'){
+          txt = "您确定要开始上班吗？";
+          this.statusInterface = 'doctorMorePractice.orgClinicStartAddress';
+        }else{
+          txt = "您确定要下班吗？";
+          this.statusInterface = 'doctorMorePractice.orgClinicEndAddress';
+        }
+        var r=confirm(txt);
+        if (r==false)
+        {
+          return;
+        }else{
+          var orgClinicStartAddress='四川省成都市武侯区';
+          if(this.type==1){//儿保
+            if(state=='我要上班'){
+              state = "已上班";
+            }else{
+              state = "已下班";
+            }
+            this.$ajax.post(urlWay.clinicHost+'doctorClinic.action',
+                'action=saveOrUpdateOrganChildcareOpenDoctor&organChildcareOpenDoctor.id='+this.data_id+'&' +
+                'organChildcareOpenDoctor.workStatus='+state)
+              .then(function(result){
+                if(result.data.mes=="成功"){
+                  window.history.back();
+                }else{
+                  alert(result.data.mes);
+                }
+              })
+              .catch(function (error) {
+                console.log(error);
+              });
+          }else{//儿科
+            this.$ajax.post(urlWay.clinicHost+'doctorClinic.action',
+                'action=saveWorkRecord&'+this.statusInterface+'='+orgClinicStartAddress+'&' +
+                'doctorMorePractice.startEndFlag='+state+'&'+'doctorMorePractice.id='+id)
+              .then(function(result){
+                if(result.data.mes=="成功"){
+                  window.history.back();
+                }else{
+                  alert(result.data.mes);
+                }
+              })
+              .catch(function (error) {
+                console.log(error);
+              });
+          }
+        }
+      }
+    }
+  }
+</script>
+<style scoped>
+  section{
+    margin: 50px 0 158px;
+  }
+  #details_content{
+    text-indent: 2em;
+    margin-top: 8px;
+    line-height: 1.7;
+  }
+  #service_time{
+    line-height: 2rem;
+  }
+  footer#btn_area{
+    padding: 10px 40px 20px 40px;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    background: #f4f4f4;
+  }
+  button{
+    margin-bottom: 16px;
+  }
+  #big_btn1{
+    background: #008ba4;
+  }
+  #big_btn2{
+    background: #0eced4;
+  }
+</style>
