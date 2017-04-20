@@ -1,0 +1,53 @@
+body{
+    background: #f4f4f4;
+}
+nav{
+    padding: 12px 0 4px;
+    text-align: center;
+}
+.li_type{
+    color: #0eced4;
+}
+.li_address,.li_time{
+    color: #9a9a9a;
+}
+section>ul{
+    border-radius: 3px;
+    box-shadow: 0px 0px 6px 0px rgba(225,225,225,0.3);
+    background: #fff;
+}
+section li{
+    padding: 15px 6px;
+    border-bottom: 1px solid #eee;
+    line-height: 20px;
+}
+section li:last-child{
+    border-bottom: 0;
+}
+nav{
+    color: #9a9a9a;
+}
+nav>div.selected{
+    color: #13b9d7;
+    font-size: 1.6rem;
+}
+/*三角形*/
+.tab_logo {
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid #ffffff;
+    text-align: center;
+}
+.tab_logo_box {
+    width: 25%;
+}
+.content_center {
+    display: -webkit-box;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+#reservation_list,#complete_list,#cancel_list{
+    display: none;
+}
